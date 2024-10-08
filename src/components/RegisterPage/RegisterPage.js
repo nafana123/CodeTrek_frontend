@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axiosInstance from '../../axiosInstance';
 
 const RegisterPage = () => {
-    const [name, setName] = useState('');
+    const [login, setLogin] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
@@ -11,11 +11,13 @@ const RegisterPage = () => {
 
         try {
             const response = await axiosInstance.post('/register', {
-                name,
+                login,
                 email,
                 password,
             });
-            alert(response.data.status);
+            const { token } = response.data;
+            localStorage.setItem('token', token);
+            alert('Регистрация успешна!');
         } catch (error) {
             alert('Ошибка регистрации');
         }
@@ -27,9 +29,9 @@ const RegisterPage = () => {
             <form onSubmit={handleSubmit}>
                 <input
                     type="text"
-                    placeholder="Имя"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Логин"
+                    value={login}
+                    onChange={(e) => setLogin(e.target.value)}
                     required
                 />
                 <input
