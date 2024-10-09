@@ -39,7 +39,9 @@ const Header = () => {
                         <Link to="/register">
                             <Button label="Зарегистрироваться" className="pButton pButtonPrimary" />
                         </Link>
-                        <Button label="Войти" className="pButton pButtonSecondary" />
+                        <Link to={"/login"}>
+                            <Button label="Войти" className="pButton pButtonSecondary" />
+                        </Link>
                     </>
                 )}
             </div>
