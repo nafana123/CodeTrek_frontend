@@ -87,6 +87,35 @@
     white-space: nowrap;
     animation: codeFall linear infinite, fadeInOut 4s ease-in-out infinite;
 }
+.info-section {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: 60px 160px; /* Увеличенные отступы сверху и снизу */
+    background: #1E1E1E;
+    color: #E0E0E0;
+}
+
+.info-content {
+    flex: 1 1 calc(50% - 32px); /* Ширина колонок 50% */
+    padding: 30px 80px; /* Увеличенные отступы внутри */
+    border-radius: 0; /* Убираем закругленные углы */
+    box-shadow: none; /* Убираем тень */
+    margin-left: 2%;
+}
+
+.info-content h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #3DFF00;
+}
+
+.info-content p {
+    font-size: 26px;
+    line-height: 1.5; /* Увеличиваем межстрочный интервал для читаемости */
+    color: #C5C6C7;
+}
+
 
 
 @keyframes fadeInOut {

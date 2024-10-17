@@ -21,7 +21,9 @@ const Header = () => {
     return (
         <header className="header">
             <nav className="navLinks">
-                <a href="#home">Home</a>
+                <Link to="/">Главная</Link>
+
+
                 <a href="#about">About</a>
                 <a href="#new">New</a>
             </nav>
