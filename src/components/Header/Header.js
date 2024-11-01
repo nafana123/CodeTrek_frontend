@@ -12,7 +12,6 @@ const Header = () => {
     if (token) {
         try {
             user = jwtDecode(token);
-            console.log(user);
         } catch (error) {
             console.error('Недействительный токен:', error);
         }

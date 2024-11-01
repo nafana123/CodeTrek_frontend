@@ -27,7 +27,7 @@ const MainPage = () => {
 
     return (
         <>
-            <section className="main-section">
+                <section className="main-section">
                 <div className="content">
                     <h1>Добро пожаловать в CodeTrek</h1>
                     <p>Решай задачи, улучшай свои навыки и участвуй в соревнованиях</p>
@@ -56,7 +56,7 @@ const MainPage = () => {
                     <i className="pi pi-check-circle" style={{ fontSize: '34px', color: '#3DFF00', marginRight: '25px', marginTop: '15px' }}></i>
                     <div>
                         <h2>Создавайте проекты</h2>
-                        <p>Применяйте свои знания на практике<br /> создавая проекты и улучшая свои навыки<br /> разработки.</p>
+                        <p>Применяйте свои знания на практике<br /> создавая проекты и улучшая свои навыки разработки.</p>
                     </div>
                 </div>
 

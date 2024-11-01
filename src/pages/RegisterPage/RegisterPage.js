@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { AiFillLock } from 'react-icons/ai';
+import { useNavigate } from "react-router-dom";
+
 import axiosInstance from '../../axiosInstance';
 import './RegisterPage.css';
 
@@ -10,10 +12,10 @@ const RegisterPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
+    const navigate = useNavigate();
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        try {
             const response = await axiosInstance.post('/register', {
                 login,
                 email,
@@ -21,12 +23,8 @@ const RegisterPage = () => {
             });
             const { token } = response.data;
             localStorage.setItem('token', token);
-            alert('Регистрация успешна!');
-        } catch (error) {
-            alert('Ошибка регистрации');
-        }
+            navigate('/dashboard');
     };
-
     return (
         <div className="main-section">
             <div className="content">

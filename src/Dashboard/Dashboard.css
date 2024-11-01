@@ -1,0 +1,76 @@
+.dashboard {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 250px;
+    background: #1E1E1E;
+}
+
+
+.selectors {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 40px;
+    margin-top: 55px;
+}
+
+
+select {
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 2px solid #3DFF00; /* Изменен цвет рамки */
+    border-radius: 5px;
+    font-size: 16px;
+    background: #1E1E1E; /* Фон селектора */
+    color: #E0E0E0; /* Цвет текста */
+    transition: border-color 0.3s;
+}
+
+
+select:focus {
+    border-color: #2A7A00; /* Изменен цвет фокуса */
+    outline: none;
+}
+
+.tasks {
+    background-color: #1E1E1E; /* Фон блока с задачами */
+    padding: 20px;
+    border-radius: 8px;
+    width: 80%;
+}
+
+h1 {
+    color: #333;
+}
+
+h2 {
+    margin-top: 0;
+    color: #3DFF00; /* Цвет заголовка */
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    margin-bottom: 15px;
+    padding: 15px;
+    background-color: #2A2A2A; /* Фон элементов списка */
+    border-radius: 5px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+
+
+li:hover {
+    transform: translateY(-3px);
+}
+
+h3 {
+    margin: 0;
+    color: #C5C6C7; /* Цвет заголовка задач */
+}
+
+p {
+    margin: 5px 0 0;
+}
