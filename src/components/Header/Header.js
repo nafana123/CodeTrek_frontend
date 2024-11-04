@@ -1,28 +1,14 @@
 import React from 'react';
 import { Button } from 'primereact/button';
-import { jwtDecode } from 'jwt-decode';
 import 'primeicons/primeicons.css';
 import './Header.css';
 import { Link } from 'react-router-dom';
 
-const Header = () => {
-    const token = localStorage.getItem('token');
-    let user = null;
-
-    if (token) {
-        try {
-            user = jwtDecode(token);
-        } catch (error) {
-            console.error('Недействительный токен:', error);
-        }
-    }
-
+const Header = ({ user }) => {
     return (
         <header className="header">
             <nav className="navLinks">
                 <Link to="/">Главная</Link>
-
-
                 <a href="#about">About</a>
                 <a href="#new">New</a>
             </nav>
@@ -40,7 +26,7 @@ const Header = () => {
                         <Link to="/register">
                             <Button label="Зарегистрироваться" className="pButton pButtonPrimary" />
                         </Link>
-                        <Link to={"/login"}>
+                        <Link to="/login">
                             <Button label="Войти" className="pButton pButtonSecondary" />
                         </Link>
                     </>

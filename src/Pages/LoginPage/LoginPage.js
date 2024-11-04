@@ -5,8 +5,9 @@ import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import './LoginPage.css';
 import { AiFillLock } from "react-icons/ai";
+import { jwtDecode } from 'jwt-decode';
 
-const LoginPage = () => {
+const LoginPage = ({ setUser }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [passwordVisible, setPasswordVisible] = useState(false);
@@ -22,6 +23,8 @@ const LoginPage = () => {
             });
             const { token } = response.data;
             localStorage.setItem('token', token);
+            const user = jwtDecode(token);
+            setUser(user);
             navigate('/dashboard');
         } catch (error) {
             alert('Ошибка входа');

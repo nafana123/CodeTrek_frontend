@@ -4,10 +4,8 @@ import RegisterPage from './Pages/RegisterPage/RegisterPage';
 import MainPage from "./Pages/MainPage/MainPage";
 import LoginPage from "./Pages/LoginPage/LoginPage";
 import Dashboard from "./Dashboard/Dashboard";
-import { useLocation } from 'react-router-dom';
 
-const AppRoutes = () => {
-    const location = useLocation();
+const AppRoutes = ({ setUser }) => {
     const isAuthenticated = () => {
         return !!localStorage.getItem('token');
     };
@@ -18,7 +16,7 @@ const AppRoutes = () => {
                 <>
                     <Route path="/" element={<MainPage />} />
                     <Route path="/register" element={<RegisterPage />} />
-                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/login" element={<LoginPage setUser={setUser} />} />
                     <Route path="*" element={<Navigate to="/" />} />
                 </>
             ) : (
