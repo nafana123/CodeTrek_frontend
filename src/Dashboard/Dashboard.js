@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axiosInstance from "../axiosInstance";
 import { Card } from 'primereact/card';
-import HeadlessDemo from '../HeadlessDemo'; // Импортируйте ваш сайдбар
+import Sidebars from '../components/Sidebars/Sidebars';
 import './Dashboard.css';
 
 const Dashboard = () => {
@@ -10,7 +10,7 @@ const Dashboard = () => {
     const [selectedLanguage, setSelectedLanguage] = useState(localStorage.getItem('selectedLanguage') || '');
     const [selectedDifficulty, setSelectedDifficulty] = useState(localStorage.getItem('selectedDifficulty') || '');
     const [tasks, setTasks] = useState([]);
-    const [sidebarVisible, setSidebarVisible] = useState(true); // Установите true для видимости по умолчанию
+    const [sidebarVisible, setSidebarVisible] = useState(true);
 
     useEffect(() => {
         const fetchLanguagesAndDifficulties = async () => {
@@ -89,8 +89,7 @@ const Dashboard = () => {
                 ))}
             </div>
 
-            {/* Сайдбар */}
-            <HeadlessDemo visible={sidebarVisible} onHide={() => setSidebarVisible(false)} />
+            <Sidebars visible={sidebarVisible} onHide={() => setSidebarVisible(false)} />
         </div>
     );
 };

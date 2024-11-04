@@ -23,7 +23,6 @@ const LoginPage = () => {
             const { token } = response.data;
             localStorage.setItem('token', token);
             navigate('/dashboard');
-            window.location.reload();
         } catch (error) {
             alert('Ошибка входа');
         }

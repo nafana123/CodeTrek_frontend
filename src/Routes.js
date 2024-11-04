@@ -1,11 +1,13 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-import RegisterPage from './pages/RegisterPage/RegisterPage';
-import MainPage from "./pages/MainPage/MainPage";
-import LoginPage from "./pages/LoginPage/LoginPage";
+import RegisterPage from './Pages/RegisterPage/RegisterPage';
+import MainPage from "./Pages/MainPage/MainPage";
+import LoginPage from "./Pages/LoginPage/LoginPage";
 import Dashboard from "./Dashboard/Dashboard";
+import { useLocation } from 'react-router-dom';
 
 const AppRoutes = () => {
+    const location = useLocation();
     const isAuthenticated = () => {
         return !!localStorage.getItem('token');
     };
