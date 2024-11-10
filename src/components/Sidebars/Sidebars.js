@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
 import { Sidebar } from 'primereact/sidebar';
 import './Sidebars.css';
-import brainIcon from '../../img/person-practicing-kickboxing-2.png';
-import brainIcon1 from '../../img/battle-3.png';
-import brainIcon2 from '../../img/team-leader.png';
-import brainIcon3 from '../../img/open-book-2.png';
-import brainIcon4 from '../../img/code-2.png';
-import brainIconHover from '../../img/person-practicing-kickboxing-4.png';
-import brainIcon1Hover from '../../img/battle-6.png';
-import brainIcon2Hover from '../../img/team-leader-4.png';
-import brainIcon3Hover from '../../img/open-book-4.png';
-import brainIcon4Hover from '../../img/code-2.png';
+import brainIcon from '../../img/sidebar/person-practicing-kickboxing-2.png';
+import brainIcon1 from '../../img/sidebar/battle-3.png';
+import brainIcon2 from '../../img/sidebar/team-leader.png';
+import brainIcon3 from '../../img/sidebar/open-book-2.png';
+import brainIcon4 from '../../img/sidebar/code-2.png';
+import brainIconHover from '../../img/sidebar/person-practicing-kickboxing-4.png';
+import brainIcon1Hover from '../../img/sidebar/battle-6.png';
+import brainIcon2Hover from '../../img/sidebar/team-leader-4.png';
+import brainIcon3Hover from '../../img/sidebar/open-book-4.png';
+import brainIcon4Hover from '../../img/sidebar/code-2.png';
 
 const icons = {
     default: [brainIcon4, brainIcon, brainIcon1, brainIcon2, brainIcon3],

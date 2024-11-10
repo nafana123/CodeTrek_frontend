@@ -22,15 +22,11 @@ function App() {
             }
         }
     }, []);
-
-    const handleUserRegistered = (userData) => {
-        setUser(userData);
-    };
-
+    
     return (
         <div className="App">
             <Router>
-                <Header user={user} />
+                <Header user={user} setUser={setUser} />
                 <AppRoutes setUser={setUser} />
                 <Footer />
             </Router>

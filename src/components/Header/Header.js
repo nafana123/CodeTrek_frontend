@@ -4,7 +4,7 @@ import 'primeicons/primeicons.css';
 import './Header.css';
 import { Link } from 'react-router-dom';
 
-const Header = ({ user }) => {
+const Header = ({ user, setUser }) => {
     return (
         <header className="header">
             <nav className="navLinks">
@@ -18,7 +18,7 @@ const Header = ({ user }) => {
                         <span>Добро пожаловать, {user.username}!</span>
                         <Button label="Выйти" className="pButton pButtonSecondary" onClick={() => {
                             localStorage.removeItem('token');
-                            window.location.reload();
+                            setUser(null);
                         }} />
                     </>
                 ) : (

@@ -3,9 +3,9 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import RegisterPage from './Pages/RegisterPage/RegisterPage';
 import MainPage from "./Pages/MainPage/MainPage";
 import LoginPage from "./Pages/LoginPage/LoginPage";
-import Dashboard from "./Dashboard/Dashboard";
+import Dashboard from "./Pages/Dashboard/Dashboard";
 
-const AppRoutes = ({ setUser }) => {
+const AppRoutes = ({ user, setUser }) => {
     const isAuthenticated = () => {
         return !!localStorage.getItem('token');
     };
@@ -15,13 +15,13 @@ const AppRoutes = ({ setUser }) => {
             {!isAuthenticated() ? (
                 <>
                     <Route path="/" element={<MainPage />} />
-                    <Route path="/register" element={<RegisterPage />} />
+                    <Route path="/register" element={<RegisterPage  setUser={setUser}/>} />
                     <Route path="/login" element={<LoginPage setUser={setUser} />} />
                     <Route path="*" element={<Navigate to="/" />} />
                 </>
             ) : (
                 <>
-                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/dashboard" element={<Dashboard  user={user}  />} />
                     <Route path="*" element={<Navigate to="/dashboard" />} />
                 </>
             )}
