@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Sidebars from '../../components/Sidebars/Sidebars';
 import './Dashboard.css';
 import java from '../../img/language/java.png';
@@ -21,7 +21,7 @@ import axiosInstance from '../../axiosInstance';
 
 const Dashboard = () => {
     const [sidebarVisible, setSidebarVisible] = useState(true);
-    const [hoveredLanguage, setHoveredLanguage] = useState(null);
+    const [userLanguages, setUserLanguages] = useState([]);
 
     const languages = [
         { src: php, alt: 'php', hoverSrc: phpHover },
@@ -34,6 +34,30 @@ const Dashboard = () => {
         { src: typeScript, alt: 'typeScript', hoverSrc: typeScriptHover }
     ];
 
+    useEffect(() => {
+        const fetchUserLanguages = async () => {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                console.error('Токен не найден в localStorage');
+                return;
+            }
+
+            try {
+                const response = await axiosInstance.get('/user/languages', {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    },
+                });
+                const selectedLanguages = response.data.lang.map(language => language.name);
+                setUserLanguages(selectedLanguages);
+            } catch (error) {
+                console.error('Ошибка при загрузке выбранных языков:', error);
+            }
+        };
+
+        fetchUserLanguages();
+    }, []);
 
     const languageClick = async (lang) => {
         const token = localStorage.getItem('token');
@@ -44,23 +68,17 @@ const Dashboard = () => {
 
         try {
             const response = await axiosInstance.post('/language/selection', { lang }, {
-                lang,
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
             });
-
-            console.log('Response asdasasddata:', response.data.token);
-            console.log('Response asdasasddata:', response.data.lang);
-
+            const selectedLanguages = response.data.lang.map(language => language.name);
+            setUserLanguages(selectedLanguages);
         } catch (error) {
             console.error('Error sending language:', error);
         }
     };
-
-
-
 
     return (
         <div className="dashboard">
@@ -75,10 +93,8 @@ const Dashboard = () => {
                     >
                         <img
                             className="language-img"
-                            src={hoveredLanguage === lang.alt ? lang.hoverSrc : lang.src}
+                            src={userLanguages.includes(lang.alt) ? lang.hoverSrc : lang.src}
                             alt={lang.alt}
-                            onMouseEnter={() => setHoveredLanguage(lang.alt)}
-                            onMouseLeave={() => setHoveredLanguage(null)}
                         />
                     </div>
                 ))}
