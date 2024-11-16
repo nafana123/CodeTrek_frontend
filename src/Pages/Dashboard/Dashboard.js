@@ -57,7 +57,8 @@ const Dashboard = () => {
         try {
             const response = await axiosInstance.get('/choice/tasks', {
                 headers: {
-                    Authorization: `Bearer ${token}`
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
                 },
             });
             setTasks(response.data.tasks);
@@ -81,8 +82,9 @@ const Dashboard = () => {
                     'Content-Type': 'application/json'
                 }
             });
-
-            console.log(response.data)
+            const selectedLanguages = response.data.lang.map(language => language.name);
+            setUserLanguages(selectedLanguages);
+            choiceTasks();
         } catch (error) {
             console.error('Error sending language:', error);
         }

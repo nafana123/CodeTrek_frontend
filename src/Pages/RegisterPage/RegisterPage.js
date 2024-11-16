@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 
 import axiosInstance from '../../axiosInstance';
 import './RegisterPage.css';
-import {jwtDecode} from "jwt-decode";
 
 const RegisterPage = ({ setUser }) => {
     const [login, setLogin] = useState('');
@@ -22,11 +21,7 @@ const RegisterPage = ({ setUser }) => {
                 email,
                 password,
             });
-            const { token } = response.data;
-            localStorage.setItem('token', token);
-            const user = jwtDecode(token);
-            setUser(user);
-            navigate('/dashboard');
+            navigate('/login');
     };
     return (
         <div className="main-section">
