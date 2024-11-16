@@ -22,6 +22,8 @@ import axiosInstance from '../../axiosInstance';
 const Dashboard = () => {
     const [sidebarVisible, setSidebarVisible] = useState(true);
     const [userLanguages, setUserLanguages] = useState([]);
+    const [tasks, setTasks] = useState([]);
+    const [currentTaskIndex, setCurrentTaskIndex] = useState(0);
 
     const languages = [
         { src: php, alt: 'php', hoverSrc: phpHover },
@@ -34,37 +36,43 @@ const Dashboard = () => {
         { src: typeScript, alt: 'typeScript', hoverSrc: typeScriptHover }
     ];
 
+    const fetchUserLanguages = async () => {
+        const token = localStorage.getItem('token');
+        try {
+            const response = await axiosInstance.get('/user/languages', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+            const selectedLanguages = response.data.lang.map(language => language.name);
+            setUserLanguages(selectedLanguages);
+        } catch (error) {
+            console.error('Ошибка при загрузке выбранных языков:', error);
+        }
+    };
+
+    const choiceTasks = async () => {
+        const token = localStorage.getItem('token');
+        try {
+            const response = await axiosInstance.get('/choice/tasks', {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
+            });
+            setTasks(response.data.tasks);
+        } catch (error) {
+            console.error('Error sending tasks:', error);
+        }
+    };
+
     useEffect(() => {
-        const fetchUserLanguages = async () => {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                console.error('Токен не найден в localStorage');
-                return;
-            }
-
-            try {
-                const response = await axiosInstance.get('/user/languages', {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                    },
-                });
-                const selectedLanguages = response.data.lang.map(language => language.name);
-                setUserLanguages(selectedLanguages);
-            } catch (error) {
-                console.error('Ошибка при загрузке выбранных языков:', error);
-            }
-        };
-
         fetchUserLanguages();
+        choiceTasks();
     }, []);
 
     const languageClick = async (lang) => {
         const token = localStorage.getItem('token');
-        if (!token) {
-            console.error('Токен не найден в localStorage');
-            return;
-        }
 
         try {
             const response = await axiosInstance.post('/language/selection', { lang }, {
@@ -73,12 +81,21 @@ const Dashboard = () => {
                     'Content-Type': 'application/json'
                 }
             });
-            const selectedLanguages = response.data.lang.map(language => language.name);
-            setUserLanguages(selectedLanguages);
+
+            console.log(response.data)
         } catch (error) {
             console.error('Error sending language:', error);
         }
     };
+
+    const handlePrevTask = () => {
+        setCurrentTaskIndex(prevIndex => (prevIndex === 0 ? tasks.length - 1 : prevIndex - 1));
+    };
+
+    const handleNextTask = () => {
+        setCurrentTaskIndex(prevIndex => (prevIndex === tasks.length - 1 ? 0 : prevIndex + 1));
+    };
+
 
     return (
         <div className="dashboard">
@@ -100,7 +117,29 @@ const Dashboard = () => {
                 ))}
             </div>
 
-            <Sidebars visible={sidebarVisible} onHide={() => setSidebarVisible(false)} />
+            <h1 className="choseTask">Выберите задачу</h1>
+            <div className="taskContainer">
+                {tasks.length > 0 ? (
+                    <div>
+                        <h2>{tasks[currentTaskIndex]?.title || 'Задача не найдена'}</h2>
+                        <p>{tasks[currentTaskIndex]?.description || 'Описание недоступно'}</p>
+                        <p><strong>Уровень сложности:</strong> {tasks[currentTaskIndex]?.difficultyLevel || 'Не указан'}
+                        </p>
+                        <p><strong>Язык:</strong> {tasks[currentTaskIndex]?.languageName || 'Не указан'}</p>
+                    </div>
+                ) : (
+                    <p>Прежде чем приступить к задаче выберите язык.</p>
+                )}
+            </div>
+
+
+            <div className="buttonTasks">
+                <button onClick={handlePrevTask}>←</button>
+                <button>Выбрать</button>
+                <button onClick={handleNextTask}>→</button>
+            </div>
+
+            <Sidebars visible={sidebarVisible} onHide={() => setSidebarVisible(false)}/>
         </div>
     );
 };
