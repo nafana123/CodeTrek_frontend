@@ -3,6 +3,7 @@ import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { AiFillLock } from 'react-icons/ai';
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from 'jwt-decode';
 
 import axiosInstance from '../../axiosInstance';
 import './RegisterPage.css';
@@ -16,13 +17,23 @@ const RegisterPage = ({ setUser }) => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
+        try {
             const response = await axiosInstance.post('/register', {
                 login,
                 email,
                 password,
             });
-            navigate('/login');
+
+            const { token } = response.data;
+            localStorage.setItem('token', token);
+            const user = jwtDecode(token);
+            setUser(user);
+            navigate('/dashboard');
+        } catch (error) {
+            alert('Ошибка регистрации');
+        }
     };
+
     return (
         <div className="main-section">
             <div className="content">

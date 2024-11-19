@@ -18,6 +18,10 @@ import csharpHover from '../../img/language/img_7.png';
 import swiftHover from '../../img/language/img_8.png';
 import typeScriptHover from '../../img/language/img_9.png';
 import axiosInstance from '../../axiosInstance';
+import {Button} from "primereact/button";
+import {Link} from "react-router-dom";
+import { ChevronRight, ChevronLeft } from 'lucide-react';
+
 
 const Dashboard = () => {
     const [sidebarVisible, setSidebarVisible] = useState(true);
@@ -98,6 +102,13 @@ const Dashboard = () => {
         setCurrentTaskIndex(prevIndex => (prevIndex === tasks.length - 1 ? 0 : prevIndex + 1));
     };
 
+    const renderStars = (level) => {
+        let stars = [];
+        for (let i = 0; i < level; i++) {
+            stars.push(<span key={i} className="star">★</span>);
+        }
+        return stars;
+    };
 
     return (
         <div className="dashboard">
@@ -122,12 +133,28 @@ const Dashboard = () => {
             <h1 className="choseTask">Выберите задачу</h1>
             <div className="taskContainer">
                 {tasks.length > 0 ? (
-                    <div>
-                        <h2>{tasks[currentTaskIndex]?.title || 'Задача не найдена'}</h2>
-                        <p>{tasks[currentTaskIndex]?.description || 'Описание недоступно'}</p>
-                        <p><strong>Уровень сложности:</strong> {tasks[currentTaskIndex]?.difficultyLevel || 'Не указан'}
-                        </p>
-                        <p><strong>Язык:</strong> {tasks[currentTaskIndex]?.languageName || 'Не указан'}</p>
+                    <div className="task-content">
+                        <div className="task-info">
+                            <h2>{tasks[currentTaskIndex]?.title || 'Задача не найдена'}</h2>
+                            <p>{tasks[currentTaskIndex]?.description || 'Описание недоступно'}</p>
+
+                            <div className="example">
+                                <h3>Пример:</h3>
+                                <div className="task-example">
+                                    <p><strong>Вход:</strong> {tasks[currentTaskIndex]?.input || 'Описание недоступно'}
+                                    </p>
+                                    <p>
+                                        <strong>Выход:</strong> {tasks[currentTaskIndex]?.output || 'Описание недоступно'}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="task-details">
+                            <p><strong>Уровень
+                                сложности:</strong> {renderStars(tasks[currentTaskIndex]?.difficultyLevel || 0)}</p>
+                            <p><strong>Язык:</strong> {tasks[currentTaskIndex]?.languageName || 'Не указан'}</p>
+                        </div>
                     </div>
                 ) : (
                     <p>Прежде чем приступить к задаче выберите язык.</p>
@@ -135,11 +162,15 @@ const Dashboard = () => {
             </div>
 
 
-            <div className="buttonTasks">
-                <button onClick={handlePrevTask}>←</button>
-                <button>Выбрать</button>
-                <button onClick={handleNextTask}>→</button>
-            </div>
+            {tasks.length > 0 && (
+                <div className="buttonTasks">
+                    <ChevronLeft size={50} onClick={handlePrevTask} className="buttonHandleTasksPrev" />
+                    <Link to="/">
+                        <Button label="Выбрать" className="pButton pButtonSecondary" />
+                    </Link>
+                    <ChevronRight size={50} onClick={handleNextTask} className="buttonHandleTasksNext" />
+                </div>
+            )}
 
             <Sidebars visible={sidebarVisible} onHide={() => setSidebarVisible(false)}/>
         </div>

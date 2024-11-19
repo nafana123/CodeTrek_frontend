@@ -1,4 +1,3 @@
-
 .dashboard {
     display: flex;
     flex-direction: column;
@@ -19,7 +18,8 @@
     width: 100%;
     padding-left: 305px;
 }
-.choseTask{
+
+.choseTask {
     color: #FFFFFF;
     font-size: 30px;
     font-weight: bold;
@@ -73,6 +73,7 @@
 .language-img-wrapper:hover .language-title {
     opacity: 1;
 }
+
 .taskContainer {
     border: 2px solid #00FF00;
     width: 1065px;
@@ -80,7 +81,7 @@
     background-color: transparent;
 }
 
-.buttonTasks{
+.buttonTasks {
     margin-top: 20px;
 }
 
@@ -91,3 +92,101 @@
 .taskContainer p {
     color: #ffffff;
 }
+
+.taskContainer {
+    border: 2px solid #00FF00;
+    width: 1065px;
+    background-color: transparent;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    height: auto;
+}
+
+.task-content {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 30px;
+    width: 100%;
+}
+
+.task-info {
+    flex: 1;
+    color: #fff;
+    max-width: 80%;
+    overflow: hidden;
+    word-wrap: break-word;
+}
+
+.task-info h2 {
+    font-size: 24px;
+    margin-bottom: 15px;
+    color: #00FF00;
+}
+
+.task-info p {
+    font-size: 16px;
+    line-height: 1.5;
+    color: #bbb;
+    overflow-y: auto;
+}
+
+.example h3 {
+    font-size: 18px;
+    margin-top: 20px;
+    color: #00FF00;
+}
+
+.task-example p {
+    font-size: 16px;
+    color: #ddd;
+    margin-top: 5px;
+}
+
+.task-details {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    color: #fff;
+    font-size: 16px;
+    text-align: right;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: 5px;
+}
+
+.task-details p {
+    margin: 5px 0;
+}
+
+.star {
+    color: #FFD700;
+}
+
+.task-details strong {
+    color: #00FF00;
+}
+
+.task-container p {
+    color: #ffffff;
+    font-size: 16px;
+}
+
+.buttonHandleTasksNext,
+.buttonHandleTasksPrev{
+    color: #00FF00;
+    cursor: pointer;
+
+}
+.buttonHandleTasksNext{
+    margin-left: 30px;
+}
+.buttonHandleTasksPrev{
+    margin-right: 30px;
+}
+

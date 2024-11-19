@@ -77,10 +77,3 @@
 .main-container{
     margin-top: 30px;
 }
-.span-text {
-    word-break: break-word; /* Разрешаем перенос текста на новую строку */
-    white-space: normal; /* Разрешает перенос по пробелам */
-    /*position:absolute;*/
-    /*margin-left: 70px;*/
-}
-

@@ -21,6 +21,16 @@ const Sidebars = () => {
     const [isHovered, setIsHovered] = useState(false);
     const [hoveredIndex, setHoveredIndex] = useState(null);
 
+    const textWithLineBreaks = [
+        'Главная страница',
+        'Решай задачи различной <br />сложности и повышай свой<br /> ранг',
+        'Учавствуй в решениях задач<br />с другими пользователями',
+        'Просмотр лидеров',
+        'Узнайте обо всех аспектах <br />CodeTrek'
+    ].map((text, index) => (
+        <span key={index} dangerouslySetInnerHTML={{ __html: text }} />
+));
+
     return (
         <Sidebar
             visible={true}
@@ -38,11 +48,7 @@ const Sidebars = () => {
                     <div className="flex flex-column h-full">
                         <div className="flex-grow-1 flex flex-column justify-content-between px-4 py-3 overflow-hidden custom-style">
                             <div className="flex flex-column gap-3 main-container">
-                                {['Главная страница',
-                                    'Решайте задачи различной сложности и повышай свой ранг',
-                                    'Учавствуй в решениях задач с другими пользователями',
-                                    'Просмотр лидеров',
-                                    'Узнайте обо всех аспектах CodeTrek.'].map((text, index) => (
+                                {textWithLineBreaks.map((textElement, index) => (
                                     <div
                                         key={index}
                                         className={`flex-row ${hoveredIndex === index ? 'hover-highlight' : ''}`}
@@ -55,7 +61,7 @@ const Sidebars = () => {
                                             alt={`Иконка ${index + 1}`}
                                         />
                                         <span className={`text-sm text-200 span-text ${isHovered ? 'expanded' : ''}`}>
-                                            {text}
+                                            {textElement}
                                         </span>
                                     </div>
                                 ))}
