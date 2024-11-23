@@ -141,18 +141,14 @@ const Dashboard = () => {
                             <div className="example">
                                 <h3>Пример:</h3>
                                 <div className="task-example">
-                                    <p><strong>Вход:</strong> {tasks[currentTaskIndex]?.input || 'Описание недоступно'}
-                                    </p>
-                                    <p>
-                                        <strong>Выход:</strong> {tasks[currentTaskIndex]?.output || 'Описание недоступно'}
-                                    </p>
+                                    <p><strong>Вход:</strong> {tasks[currentTaskIndex]?.input || 'Описание недоступно'}</p>
+                                    <p><strong>Выход:</strong> {tasks[currentTaskIndex]?.output || 'Описание недоступно'}</p>
                                 </div>
                             </div>
                         </div>
 
                         <div className="task-details">
-                            <p><strong>Уровень
-                                сложности:</strong> {renderStars(tasks[currentTaskIndex]?.difficultyLevel || 0)}</p>
+                            <p><strong>Уровень сложности:</strong> {renderStars(tasks[currentTaskIndex]?.difficultyLevel || 0)}</p>
                             <p><strong>Язык:</strong> {tasks[currentTaskIndex]?.languageName || 'Не указан'}</p>
                         </div>
                     </div>
@@ -161,18 +157,17 @@ const Dashboard = () => {
                 )}
             </div>
 
-
             {tasks.length > 0 && (
                 <div className="buttonTasks">
                     <ChevronLeft size={50} onClick={handlePrevTask} className="buttonHandleTasksPrev" />
-                    <Link to="/">
+                    <Link to={`/task/${tasks[currentTaskIndex]?.id}/${tasks[currentTaskIndex]?.languageName}`}>
                         <Button label="Выбрать" className="pButton pButtonSecondary" />
                     </Link>
                     <ChevronRight size={50} onClick={handleNextTask} className="buttonHandleTasksNext" />
                 </div>
             )}
 
-            <Sidebars visible={sidebarVisible} onHide={() => setSidebarVisible(false)}/>
+            <Sidebars visible={sidebarVisible} onHide={() => setSidebarVisible(false)} />
         </div>
     );
 };

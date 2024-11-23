@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Sidebar } from 'primereact/sidebar';
+import { Link, useLocation } from 'react-router-dom';
 import './Sidebars.css';
 import brainIcon from '../../img/sidebar/person-practicing-kickboxing-2.png';
 import brainIcon1 from '../../img/sidebar/battle-3.png';
 import brainIcon2 from '../../img/sidebar/team-leader.png';
 import brainIcon3 from '../../img/sidebar/open-book-2.png';
-import brainIcon4 from '../../img/sidebar/code-2.png';
+import brainIcon4 from '../../img/sidebar/img_1.png';
 import brainIconHover from '../../img/sidebar/person-practicing-kickboxing-4.png';
 import brainIcon1Hover from '../../img/sidebar/battle-6.png';
 import brainIcon2Hover from '../../img/sidebar/team-leader-4.png';
@@ -20,6 +21,7 @@ const icons = {
 const Sidebars = () => {
     const [isHovered, setIsHovered] = useState(false);
     const [hoveredIndex, setHoveredIndex] = useState(null);
+    const location = useLocation();
 
     const textWithLineBreaks = [
         'Главная страница',
@@ -28,8 +30,21 @@ const Sidebars = () => {
         'Просмотр лидеров',
         'Узнайте обо всех аспектах <br />CodeTrek'
     ].map((text, index) => (
-        <span key={index} dangerouslySetInnerHTML={{ __html: text }} />
-));
+        <span key={text} dangerouslySetInnerHTML={{ __html: text }} />
+    ));
+
+    const getIcon = (index) => {
+        const pathIconMapping = {
+            '/dashboard': 0,
+            '/all/tasks': 1,
+        };
+
+        if (pathIconMapping[location.pathname] === index) {
+            return icons.hover[index];
+        }
+
+        return hoveredIndex === index ? icons.hover[index] : icons.default[index];
+    };
 
     return (
         <Sidebar
@@ -49,21 +64,23 @@ const Sidebars = () => {
                         <div className="flex-grow-1 flex flex-column justify-content-between px-4 py-3 overflow-hidden custom-style">
                             <div className="flex flex-column gap-3 main-container">
                                 {textWithLineBreaks.map((textElement, index) => (
-                                    <div
-                                        key={index}
-                                        className={`flex-row ${hoveredIndex === index ? 'hover-highlight' : ''}`}
-                                        onMouseEnter={() => setHoveredIndex(index)}
-                                        onMouseLeave={() => setHoveredIndex(null)}
-                                    >
-                                        <img
-                                            src={hoveredIndex === index ? icons.hover[index] : icons.default[index]}
-                                            className="img"
-                                            alt={`Иконка ${index + 1}`}
-                                        />
-                                        <span className={`text-sm text-200 span-text ${isHovered ? 'expanded' : ''}`}>
-                                            {textElement}
-                                        </span>
-                                    </div>
+                                    <Link to={index === 0 ? '/dashboard' : (index === 1 ? '/all/tasks' : '#')} key={index}>
+                                        <div
+                                            className={`flex-row ${hoveredIndex === index ? 'hover-highlight' : ''}`}
+                                            onMouseEnter={() => setHoveredIndex(index)}
+                                            onMouseLeave={() => setHoveredIndex(null)}
+                                        >
+                                            <img
+                                                src={getIcon(index)}
+                                                className="img"
+                                                alt={`Иконка ${index + 1}`}
+                                            />
+
+                                            <span className={`text-sm text-200 span-text ${isHovered ? 'expanded' : ''}`}>
+                                                {textElement}
+                                            </span>
+                                        </div>
+                                    </Link>
                                 ))}
                             </div>
                         </div>

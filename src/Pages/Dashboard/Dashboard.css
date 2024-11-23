@@ -112,7 +112,7 @@
     flex-direction: row;
     justify-content: space-between;
     gap: 30px;
-    width: 100%;
+    width: 95%;
 }
 
 .task-info {
