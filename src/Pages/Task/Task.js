@@ -7,19 +7,38 @@ import { javascript } from '@codemirror/lang-javascript';
 import { dracula } from '@uiw/codemirror-theme-dracula';
 
 import './Task.css';
-import {Button} from "primereact/button";
+import { Button } from "primereact/button";
 
 const Task = () => {
     const { id, language } = useParams();
     const [sidebarVisible, setSidebarVisible] = useState(true);
     const [taskData, setTaskData] = useState(null);
+    const [code, setCode] = useState("");  // Состояние для хранения кода пользователя
 
+    // Загрузка данных задачи
     const task = async () => {
         try {
             const response = await axiosInstance.get(`/task/${id}/${language}`);
             setTaskData(response.data);
         } catch (err) {
             console.log('Задача не найдена');
+        }
+    }
+
+    const submitSolution = async () => {
+        const token = localStorage.getItem('token');
+        const payload = { code };
+
+        try {
+            const response = await axiosInstance.post(`/solution/task/${id}`, payload, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            console.log(response.data);
+        } catch (err) {
+            console.log('Ошибка в отправке решения');
         }
     }
 
@@ -60,20 +79,27 @@ const Task = () => {
                     <p><strong>Описание:</strong> {taskData.description}</p>
                     <p><strong>Входные данные:</strong> {taskData.input}</p>
                     <p><strong>Выходные данные:</strong> {taskData.output}</p>
+                    <div className='console-container'>
+                        <h1>Консоль</h1>
+                    </div>
                 </div>
 
                 <div className="task-solution">
                     <h5 className='titles'>Решение задачи</h5>
                     <CodeMirror
-                        value=""
-                        height="450px"
+                        value={code}
+                        height="630px"
                         theme={dracula}
-                        extensions={[javascript({ jsx: true })]}
+                        extensions={[javascript({jsx: true})]}
                         onChange={(value, viewUpdate) => {
-                            console.log('value:', value);
+                            setCode(value);
                         }}
                     />
-                    <Button label="Отправить решение" className="pButton pButtonSecondarysss" />
+                    <Button
+                        label="Отправить решение"
+                        className="pButton pButtonSecondarysss"
+                        onClick={submitSolution}
+                    />
                 </div>
             </div>
         </div>
