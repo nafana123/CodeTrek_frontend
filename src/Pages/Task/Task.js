@@ -5,17 +5,18 @@ import axiosInstance from '../../axiosInstance';
 import CodeMirror from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
 import { dracula } from '@uiw/codemirror-theme-dracula';
+import { Button } from "primereact/button";
 
 import './Task.css';
-import { Button } from "primereact/button";
 
 const Task = () => {
     const { id, language } = useParams();
     const [sidebarVisible, setSidebarVisible] = useState(true);
     const [taskData, setTaskData] = useState(null);
-    const [code, setCode] = useState("");  // Состояние для хранения кода пользователя
+    const [code, setCode] = useState('');
+    const [consoleOutput, setConsoleOutput] = useState('');
+    const [consoleError, setConsoleError] = useState('');
 
-    // Загрузка данных задачи
     const task = async () => {
         try {
             const response = await axiosInstance.get(`/task/${id}/${language}`);
@@ -25,20 +26,33 @@ const Task = () => {
         }
     }
 
-    const submitSolution = async () => {
-        const token = localStorage.getItem('token');
-        const payload = { code };
+    const checkSolutionLocally = async () => {
+        if (!code.trim()) {
+            setConsoleError('Решение не может быть пустым');
+            setConsoleOutput('');
+            document.querySelector('.console-output').style.color = "red";
+            return;
+        }
+
+        setConsoleOutput('');
+        setConsoleError('');
 
         try {
-            const response = await axiosInstance.post(`/solution/task/${id}`, payload, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            });
-            console.log(response.data);
+            const response = await axiosInstance.post(`/execute/task/${id}`, { code });
+
+            if (response.data.success) {
+                setConsoleOutput(response.data.output);
+                setConsoleError('');
+                document.querySelector('.console-output').style.color = "lightgreen";
+            } else {
+                setConsoleOutput('');
+                setConsoleError(response.data.error);
+                document.querySelector('.console-output').style.color = "red";
+            }
         } catch (err) {
-            console.log('Ошибка в отправке решения');
+            setConsoleError('Ошибка отправки решения');
+            setConsoleOutput('');
+            document.querySelector('.console-output').style.color = "red";
         }
     }
 
@@ -81,6 +95,9 @@ const Task = () => {
                     <p><strong>Выходные данные:</strong> {taskData.output}</p>
                     <div className='console-container'>
                         <h1>Консоль</h1>
+                        <pre className="console-output">
+                            {consoleError || consoleOutput}
+                        </pre>
                     </div>
                 </div>
 
@@ -95,14 +112,17 @@ const Task = () => {
                             setCode(value);
                         }}
                     />
-                    <Button
-                        label="Отправить решение"
-                        className="pButton pButtonSecondarysss"
-                        onClick={submitSolution}
-                    />
+                    <div className="buttons-container">
+                        <Button
+                            label="Проверить"
+                            className="pButton pButtonSecondaryss"
+                            onClick={checkSolutionLocally}
+                        />
+                    </div>
                 </div>
             </div>
         </div>
     );
 }
+
 export default Task;

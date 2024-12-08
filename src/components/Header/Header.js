@@ -12,8 +12,8 @@ const Header = ({ user, setUser }) => {
             ) : (
                 <nav className="navLinks">
                     <Link to="/">Главная</Link>
-                    <a href="#about">About</a>
-                    <a href="#new">New</a>
+                    <a href="#new">Новости</a>
+                    <a href="#about">О нас</a>
                 </nav>
             )}
             <div className="authButtons">
