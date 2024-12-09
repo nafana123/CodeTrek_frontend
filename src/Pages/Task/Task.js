@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import Sidebars from "../../components/Sidebars/Sidebars";
-import { useParams } from 'react-router-dom';
+import {useNavigate, useParams} from 'react-router-dom';
 import axiosInstance from '../../axiosInstance';
 import CodeMirror from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
 import { dracula } from '@uiw/codemirror-theme-dracula';
 import { Button } from "primereact/button";
+import { Toast } from 'primereact/toast';
+import { useRef } from 'react';
+
 
 import './Task.css';
 
@@ -16,6 +19,9 @@ const Task = () => {
     const [code, setCode] = useState('');
     const [consoleOutput, setConsoleOutput] = useState('');
     const [consoleError, setConsoleError] = useState('');
+    const toast = useRef(null);
+    const navigate = useNavigate();
+
 
     const task = async () => {
         try {
@@ -55,6 +61,38 @@ const Task = () => {
             document.querySelector('.console-output').style.color = "red";
         }
     }
+
+    const submitSolution = async () => {
+        try {
+            const token = localStorage.getItem('token');
+            const consoleContent = consoleError || consoleOutput;
+            if(consoleContent === consoleError){
+                toast.current.show({
+                    severity: 'error',
+                    summary: 'Ошибка выполнения',
+                    detail: 'Не удалось отправить решение. Код содержит ошибку, препятствующую его выполнению.',
+                    life: 3500
+                });
+            }
+            const response = await axiosInstance.post(`/submit/task/${id}`,
+                {
+                    code,
+                    consoleContent
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    }
+                }
+            );
+            if(response.data.success){
+                navigate(`/task/solution/${id}/${language}`);
+            }
+        } catch (err) {
+
+        }
+    };
 
     useEffect(() => {
         task();
@@ -100,7 +138,7 @@ const Task = () => {
                         </pre>
                     </div>
                 </div>
-
+                <Toast ref={toast} position="top-right" />
                 <div className="task-solution">
                     <h5 className='titles'>Решение задачи</h5>
                     <CodeMirror
@@ -117,6 +155,11 @@ const Task = () => {
                             label="Проверить"
                             className="pButton pButtonSecondaryss"
                             onClick={checkSolutionLocally}
+                        />
+                        <Button
+                            label="Отправить решение"
+                            className="pButton pButtonSecondarysss"
+                            onClick={submitSolution}
                         />
                     </div>
                 </div>

@@ -5,7 +5,8 @@ import MainPage from "./Pages/MainPage/MainPage";
 import LoginPage from "./Pages/LoginPage/LoginPage";
 import Dashboard from "./Pages/Dashboard/Dashboard";
 import AllTasks from "./Pages/allTasks/AllTasks";
-import Task from "./Pages/Task/Task"
+import Task from "./Pages/Task/Task";
+import TaskSolution from "./Pages/TaskSolution/TaskSolution";
 
 const AppRoutes = ({ user, setUser }) => {
     const isAuthenticated = () => {
@@ -25,7 +26,7 @@ const AppRoutes = ({ user, setUser }) => {
                 <>
                     <Route path="/dashboard" element={<Dashboard  user={user}  />} />
                     <Route path="/task/:id/:language" element={<Task />} />
-
+                    <Route path="/task/solution/:id/:language" element={<TaskSolution />} />
                     <Route path="/all/tasks" element={<AllTasks  user={user}  />} />
                     <Route path="*" element={<Navigate to="/dashboard" />} />
                 </>
