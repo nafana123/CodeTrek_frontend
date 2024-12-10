@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import Sidebars from "../../components/Sidebars/Sidebars";
 import axiosInstance from '../../axiosInstance';
-import { useParams } from "react-router-dom";
 import { Paginator } from 'primereact/paginator';
 import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/saga-blue/theme.css';
@@ -10,9 +10,11 @@ import './TaskSolution.css';
 import CodeMirror from "@uiw/react-codemirror";
 import {dracula} from "@uiw/codemirror-theme-dracula";
 import {javascript} from "@codemirror/lang-javascript";
+import {Button} from "primereact/button";
 
 const TaskSolution = () => {
     const { id, language } = useParams();
+    const navigate = useNavigate(); // Хук для навигации
     const [sidebarVisible, setSidebarVisible] = useState(true);
     const [userSolvedTask, setUserSolvedTask] = useState(null);
     const [solvedTasksList, setSolvedTasksList] = useState([]);
@@ -48,6 +50,11 @@ const TaskSolution = () => {
         (currentPage + 1) * pageSize
     );
 
+    const handleNavigation = (event) => {
+        event.preventDefault(); // Останавливаем стандартное поведение ссылки
+        navigate("/all/tasks"); // Программная навигация
+    };
+
     return (
         <div className="task-solution-container">
             <Sidebars visible={sidebarVisible} onHide={() => setSidebarVisible(false)} />
@@ -77,15 +84,22 @@ const TaskSolution = () => {
                                 />
                                 </pre>
                             </div>
+                            <Button
+                                label="Выбрать следующую задачу"
+                                className="pButton pButtonSecondaryes"
+                                onClick={handleNavigation}
+                            />
                         </div>
                         <div className="task-detailss">
-                            <p><strong>Уровень сложности:</strong> {renderStars(userSolvedTask.task.difficulty.level || 0)}</p>
+                            <p><strong>Уровень
+                                сложности:</strong> {renderStars(userSolvedTask.task.difficulty.level || 0)}</p>
                             <p><strong>Язык:</strong> {language || 'Не указан'}</p>
                         </div>
                     </div>
-                )}
 
+                )}
                 {solvedTasksList.length > 0 && (
+
                     <div className="other-solutions">
                         <div className="other-solutions-details">
                             <h3>Решения других пользователей</h3>
@@ -99,7 +113,6 @@ const TaskSolution = () => {
                                     <p className="username">
                                         <strong>Пользователь: {task.user.login}</strong>
                                         <strong>Решение №{(currentPage * pageSize) + index + 1}</strong>
-
                                     </p>
                                 </div>
 
