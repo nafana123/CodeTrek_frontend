@@ -6,11 +6,12 @@
 }
 
 .task-output-container {
-    width: 100%;
-    max-width: 1000px;
-    padding: 20px;
-    margin-left: 20%;
-    background-color: transparent;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 30px;
+    background-color: #2c2c2c;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
 .task-content {
@@ -109,4 +110,37 @@
     color: #00FF00;
     font-size: 22px;
     margin-bottom: 20px;
+}
+.p-paginator {
+    background: #1E1E1E;
+}
+.p-paginator-first,
+.p-paginator-last,
+.p-paginator-next,
+.p-paginator-prev,
+.p-paginator-page{
+    color: #fff;
+}
+
+.p-paginator-last:hover,
+.p-paginator-first:hover,
+.p-paginator-next:hover,
+.p-paginator-prev:hover,
+.p-paginator-current,
+.p-paginator-page:hover,
+.p-paginator-page.p-highlight{
+    background: #00FF00;
+    color: #000;
+}
+.other-solutions-details{
+    display: flex;
+    justify-content: space-between;
+}
+.user-infos p{
+    display: flex;
+    justify-content: space-between;
+    font-size: 17px;
+}
+.ͼ16 .cm-activeLine {
+    background: none;
 }

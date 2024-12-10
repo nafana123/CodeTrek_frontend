@@ -130,9 +130,9 @@
 }
 
 .task-info p {
-    font-size: 16px;
+    font-size: 19px;
     line-height: 1.5;
-    color: #bbb;
+    color: #ffffff;
     overflow-y: auto;
 }
 
@@ -143,8 +143,8 @@
 }
 
 .task-example p {
-    font-size: 16px;
-    color: #ddd;
+    font-size: 18px;
+    color: #ffffff;
     margin-top: 5px;
 }
 

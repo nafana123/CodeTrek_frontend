@@ -63,35 +63,34 @@ const Task = () => {
     }
 
     const submitSolution = async () => {
-        try {
-            const token = localStorage.getItem('token');
-            const consoleContent = consoleError || consoleOutput;
-            if(consoleContent === consoleError){
-                toast.current.show({
-                    severity: 'error',
-                    summary: 'Ошибка выполнения',
-                    detail: 'Не удалось отправить решение. Код содержит ошибку, препятствующую его выполнению.',
-                    life: 3500
-                });
-            }
-            const response = await axiosInstance.post(`/submit/task/${id}`,
-                {
-                    code,
-                    consoleContent
-                },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        'Content-Type': 'application/json',
-                    }
-                }
-            );
-            if(response.data.success){
-                navigate(`/task/solution/${id}/${language}`);
-            }
-        } catch (err) {
+            try {
+                const token = localStorage.getItem('token');
 
-        }
+                    const response = await axiosInstance.post(`/submit/task/${id}`,
+                        {
+                            code
+                        },
+                        {
+                            headers: {
+                                Authorization: `Bearer ${token}`,
+                                'Content-Type': 'application/json',
+                            }
+                        }
+                    );
+                    if (response.data.success) {
+                        navigate(`/task/solution/${id}/${language}`);
+                    }
+                    else{
+                        toast.current.show({
+                            severity: 'error',
+                            summary: 'Ошибка в решение',
+                            detail: ' Пожалуйста проверьте ваше решение, и отправьте его снова.',
+                            life: 3500
+                        });
+                    }
+            } catch (err) {
+
+            }
     };
 
     useEffect(() => {

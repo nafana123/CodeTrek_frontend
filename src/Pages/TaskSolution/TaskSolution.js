@@ -2,13 +2,22 @@ import React, { useEffect, useState } from "react";
 import Sidebars from "../../components/Sidebars/Sidebars";
 import axiosInstance from '../../axiosInstance';
 import { useParams } from "react-router-dom";
+import { Paginator } from 'primereact/paginator';
+import 'primereact/resources/primereact.min.css';
+import 'primereact/resources/themes/saga-blue/theme.css';
+import 'primeicons/primeicons.css';
 import './TaskSolution.css';
+import CodeMirror from "@uiw/react-codemirror";
+import {dracula} from "@uiw/codemirror-theme-dracula";
+import {javascript} from "@codemirror/lang-javascript";
 
 const TaskSolution = () => {
     const { id, language } = useParams();
     const [sidebarVisible, setSidebarVisible] = useState(true);
     const [userSolvedTask, setUserSolvedTask] = useState(null);
     const [solvedTasksList, setSolvedTasksList] = useState([]);
+    const [currentPage, setCurrentPage] = useState(0);
+    const [pageSize] = useState(7);
 
     const taskOutput = async () => {
         const token = localStorage.getItem('token');
@@ -21,7 +30,6 @@ const TaskSolution = () => {
             });
             setUserSolvedTask(response.data.userSolvedTask);
             setSolvedTasksList(response.data.solvedTasksList);
-            console.log(response.data);
         } catch (err) {
             console.log('ошибка', err);
         }
@@ -30,6 +38,15 @@ const TaskSolution = () => {
     useEffect(() => {
         taskOutput();
     }, [id]);
+
+    const onPageChange = (event) => {
+        setCurrentPage(event.first / event.rows);
+    }
+
+    const paginatedSolutions = solvedTasksList.slice(
+        currentPage * pageSize,
+        (currentPage + 1) * pageSize
+    );
 
     return (
         <div className="task-solution-container">
@@ -51,7 +68,14 @@ const TaskSolution = () => {
                             </div>
                             <div className="user-code">
                                 <pre><strong>Ваш код:</strong></pre>
-                                <pre>{userSolvedTask.code}</pre>
+                                <pre>
+                                <CodeMirror
+                                    value={userSolvedTask.code}
+                                    theme={dracula}
+                                    extensions={[javascript({jsx: true})]}
+                                    editable={false}
+                                />
+                                </pre>
                             </div>
                         </div>
                         <div className="task-detailss">
@@ -63,14 +87,40 @@ const TaskSolution = () => {
 
                 {solvedTasksList.length > 0 && (
                     <div className="other-solutions">
-                        <h3>Решения других пользователей</h3>
-                        {solvedTasksList.map((task, index) => (
+                        <div className="other-solutions-details">
+                            <h3>Решения других пользователей</h3>
+                            {solvedTasksList.length > 0 && (
+                                <p className="solutions-count">{`Всего решений: ${solvedTasksList.length}`}</p>
+                            )}
+                        </div>
+                        {paginatedSolutions.map((task, index) => (
                             <div key={task.id} className="solution-item">
-                                <p><strong>Решение пользователя:</strong> {task.user.login}</p>
-                                <pre><strong>Код:</strong></pre>
-                                <pre>{task.code}</pre>
+                                <div className="user-infos">
+                                    <p className="username">
+                                        <strong>Пользователь: {task.user.login}</strong>
+                                        <strong>Решение №{(currentPage * pageSize) + index + 1}</strong>
+
+                                    </p>
+                                </div>
+
+                                <pre>
+                                     <CodeMirror
+                                         value={task.code}
+                                         theme={dracula}
+                                         extensions={[javascript({jsx: true})]}
+                                         editable={false}
+                                     />
+                                </pre>
                             </div>
                         ))}
+                        <Paginator
+                            first={currentPage * pageSize}
+                            rows={pageSize}
+                            totalRecords={solvedTasksList.length}
+                            onPageChange={onPageChange}
+                            template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink"
+                            className="p-mt-3"
+                        />
                     </div>
                 )}
             </div>
