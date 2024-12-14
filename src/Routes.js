@@ -7,6 +7,7 @@ import Dashboard from "./Pages/Dashboard/Dashboard";
 import AllTasks from "./Pages/allTasks/AllTasks";
 import Task from "./Pages/Task/Task";
 import TaskSolution from "./Pages/TaskSolution/TaskSolution";
+import Profile from "./Pages/Profile/Profile";
 
 const AppRoutes = ({ user, setUser }) => {
     const isAuthenticated = () => {
@@ -28,6 +29,7 @@ const AppRoutes = ({ user, setUser }) => {
                     <Route path="/task/:id/:language" element={<Task />} />
                     <Route path="/task/solution/:id/:language" element={<TaskSolution />} />
                     <Route path="/all/tasks" element={<AllTasks  user={user}  />} />
+                    <Route path="/profile" element={<Profile />} />
                     <Route path="*" element={<Navigate to="/dashboard" />} />
                 </>
             )}

@@ -1,0 +1,251 @@
+.profile-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #252526;
+    min-height: 100vh;
+    padding: 20px;
+    color: #EDEDED;
+}
+
+.profile-container {
+    display: flex;
+    gap: 20px;
+    width: 100%;
+    max-width: 1300px;
+    color: #EDEDED;
+}
+
+.left-container {
+    flex: 1;
+    background-color: #333333;
+    border: 1px solid #3A3D41;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.profile-card {
+    display: flex;
+    width: 100%;
+}
+
+.profile-info {
+    margin-left: 20px;
+}
+
+.profile-info h3 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #FFFFFF;
+}
+
+.profile-info p {
+    font-size: 16px;
+    color: #ADB0B6;
+}
+
+.profile-avatar {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #3498db;
+    color: white;
+    font-weight: bold;
+    font-size: 50px;
+    text-transform: uppercase;
+}
+
+.right-container {
+    flex: 2.5;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.upper-box {
+    background: rgba(51, 51, 51, 0.85);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.upper-box h3 {
+    font-size: 24px;
+    color: #fff;
+    margin-bottom: 20px;
+}
+
+.upper-box canvas {
+    max-height: 400px;
+}
+
+.upper-box .chartjs-render-monitor {
+    color: #EDEDED;
+}
+
+.lower-box {
+    background-color: #333333;
+    border-radius: 10px;
+    border: 1px solid #3A3D41;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    padding: 20px;
+}
+
+.task-card {
+    background-color: #2B2B2B;
+    border-radius: 10px;
+    border: 1px solid #3A3D41;
+    padding: 20px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    margin-bottom: 20px;
+}
+
+.task-card h5 {
+    font-size: 18px;
+    color: #FFFFFF;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.task-card p {
+    font-size: 16px;
+    color: #ADB0B6;
+}
+
+.task-card .profil-inf {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.task-meta {
+    font-size: 14px;
+    color: #C8C8C8;
+}
+
+.canvas {
+    background: white;
+}
+
+.task-language {
+    background-color: #00A2FF;
+    color: #FFFFFF;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 10px;
+    text-transform: uppercase;
+}
+
+.task-difficulty {
+    color: #FFD700;
+}
+
+.profile-sections {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.profile-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #FFFFFF;
+}
+
+.profile-section .section-icon {
+    font-size: 20px;
+    color: #ADB0B6;
+}
+
+.section-p {
+    margin: 0;
+    font-size: 17px;
+    color: #ffffff;
+}
+
+.buttonHandleTasksNext,
+.buttonHandleTasksPrev {
+    font-size: 16px;
+    color: #00FF00;
+    cursor: pointer;
+}
+
+.buttonHandleTasksNext:hover,
+.buttonHandleTasksPrev:hover {
+    color: #00FF00;
+}
+
+a.p-menuitem-link {
+    color: black;
+}
+
+@media (max-width: 768px) {
+    .profile-container {
+        flex-direction: column;
+    }
+
+    .left-container,
+    .right-container {
+        flex: 1;
+    }
+
+    .profile-avatar {
+        margin: 0 auto 20px;
+    }
+
+    .profile-info {
+        text-align: center;
+    }
+
+    .upper-box canvas {
+        max-height: 200px;
+    }
+}
+
+div.p-tabmenu.p-component,
+a.p-menuitem-link,
+ul.p-tabmenu-nav.p-reset {
+    color: #FFFFFF;
+    background-color: #333333;
+}
+
+.p-highlight .p-menuitem-link {
+    border-color: #00FF00;
+}
+
+.p-menuitem-link:hover {
+    border-color: #00A2FF;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #333;
+    border-radius: 4px;
+    background-color: #2e2e2e;
+    color: #fff;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+}
+
+.pButtonSecondarysProfile {
+    width: 100%;
+    border-color: #00FF00;
+    color: #FFFFFF;
+    transition: background-color 0.3s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 15px;
+    margin-top: 20px;
+}
+
+.pButtonSecondarysProfile:hover {
+    box-shadow: 0 0 15px rgba(61, 255, 0, 0.8);
+}

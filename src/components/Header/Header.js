@@ -19,11 +19,14 @@ const Header = ({ user, setUser }) => {
             <div className="authButtons">
                 {user ? (
                     <>
-                        <Button
-                            label='Профиль'
-                            icon='pi pi-user'
-                            className="pButton pButtonPrimary"
-                        />
+                        <Link to="/profile">
+                            <Button
+                                label='Профиль'
+                                icon='pi pi-user'
+                                className="pButton pButtonPrimary"
+                            />
+                        </Link>
+
                         <Button
                             label="Выйти"
                             icon='pi pi-sign-out'
