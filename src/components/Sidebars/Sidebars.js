@@ -37,6 +37,7 @@ const Sidebars = () => {
         const pathIconMapping = {
             '/dashboard': 0,
             '/all/tasks': 1,
+            '/leaderboard': 3,
         };
 
         if (pathIconMapping[location.pathname] === index) {
@@ -64,7 +65,7 @@ const Sidebars = () => {
                         <div className="flex-grow-1 flex flex-column justify-content-between px-4 py-3 overflow-hidden custom-style">
                             <div className="flex flex-column gap-3 main-container">
                                 {textWithLineBreaks.map((textElement, index) => (
-                                    <Link to={index === 0 ? '/dashboard' : (index === 1 ? '/all/tasks' : '#')} key={index}>
+                                    <Link to={index === 0 ? '/dashboard' : index === 1 ? '/all/tasks' : index === 3 ? '/leaderboard' : '#'} key={index}>
                                         <div
                                             className={`flex-row ${hoveredIndex === index ? 'hover-highlight' : ''}`}
                                             onMouseEnter={() => setHoveredIndex(index)}

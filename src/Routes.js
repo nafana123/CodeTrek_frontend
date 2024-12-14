@@ -8,6 +8,7 @@ import AllTasks from "./Pages/allTasks/AllTasks";
 import Task from "./Pages/Task/Task";
 import TaskSolution from "./Pages/TaskSolution/TaskSolution";
 import Profile from "./Pages/Profile/Profile";
+import Leaderboard from "./Pages/Leaderboard/Leaderboard";
 
 const AppRoutes = ({ user, setUser }) => {
     const isAuthenticated = () => {
@@ -30,6 +31,7 @@ const AppRoutes = ({ user, setUser }) => {
                     <Route path="/task/solution/:id/:language" element={<TaskSolution />} />
                     <Route path="/all/tasks" element={<AllTasks  user={user}  />} />
                     <Route path="/profile" element={<Profile />} />
+                    <Route path="/leaderboard" element={<Leaderboard />} />
                     <Route path="*" element={<Navigate to="/dashboard" />} />
                 </>
             )}
