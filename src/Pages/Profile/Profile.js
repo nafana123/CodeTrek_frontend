@@ -5,8 +5,8 @@ import Sidebars from "../../components/Sidebars/Sidebars";
 import axiosInstance from "../../axiosInstance";
 import { Bar } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
-import "./Profile.css";
 import { Button } from "primereact/button";
+import "./Profile.css";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -16,10 +16,8 @@ const Profile = () => {
     const [solvedTasks, setSolvedTasks] = useState([]);
     const [languages, setLanguages] = useState([]);
     const [activeTab, setActiveTab] = useState(0);
-
     const [currentPage, setCurrentPage] = useState(0);
     const tasksPerPage = 3;
-
     const [editLogin, setEditLogin] = useState('');
     const [editEmail, setEditEmail] = useState('');
 
@@ -29,11 +27,9 @@ const Profile = () => {
     ];
 
     const renderStars = (difficulty) => {
-        const stars = [];
-        for (let i = 0; i < difficulty; i++) {
-            stars.push(<span key={i} className="star">★</span>);
-        }
-        return stars;
+        return Array.from({ length: difficulty }, (_, i) => (
+            <span key={i} className="star">★</span>
+        ));
     };
 
     const getDataUser = async () => {
@@ -46,15 +42,14 @@ const Profile = () => {
                 },
             });
 
-            setUser(response.data.user);
-            setSolvedTasks(response.data.solvedTasks);
+            const { user, solvedTasks } = response.data;
+            setUser(user);
+            setSolvedTasks(solvedTasks);
+            setEditLogin(user.login);
+            setEditEmail(user.email);
 
-            setEditLogin(response.data.user.login);
-            setEditEmail(response.data.user.email);
-
-            const uniqueLanguages = [...new Set(response.data.solvedTasks.map(task => task.language))];
+            const uniqueLanguages = [...new Set(solvedTasks.map(task => task.language))];
             setLanguages(uniqueLanguages);
-
         } catch (error) {
             console.error("Ошибка при получении данных пользователя:", error);
         }
@@ -92,7 +87,7 @@ const Profile = () => {
             "5": 0,
         };
 
-        tasks.forEach((task) => {
+        tasks.forEach(task => {
             if (difficultyCounts[task.difficulty] !== undefined) {
                 difficultyCounts[task.difficulty]++;
             }
@@ -103,13 +98,7 @@ const Profile = () => {
             datasets: [
                 {
                     label: "Количество решённых задач",
-                    data: [
-                        difficultyCounts["1"],
-                        difficultyCounts["2"],
-                        difficultyCounts["3"],
-                        difficultyCounts["4"],
-                        difficultyCounts["5"],
-                    ],
+                    data: Object.values(difficultyCounts),
                     backgroundColor: [
                         "rgba(102, 204, 255, 0.8)",
                         "rgba(102, 255, 102, 0.8)",
@@ -145,21 +134,15 @@ const Profile = () => {
     return (
         <div className="profile-page">
             <Sidebars visible={sidebarVisible} onHide={() => setSidebarVisible(false)} />
-
             <div className="profile-container">
                 <div className="left-container">
                     {user ? (
                         <div className="profil-container">
                             <p><strong>Дата регистрации:</strong> {user.registrationDate}</p>
                             <div className="profile-card">
-                                {user ? (
-                                    <div className="profile-avatar">
-                                        {getInitials(user.login || '')}
-                                    </div>
-                                ) : (
-                                    <div className="loading-placeholder">Загрузка данных...</div>
-                                )}
-
+                                <div className="profile-avatar">
+                                    {getInitials(user.login || '')}
+                                </div>
                                 <div className="profile-info">
                                     <h3>{user.login}</h3>
                                     <p>{user.email}</p>
@@ -184,18 +167,18 @@ const Profile = () => {
                                     <p className="section-p">0</p>
                                 </div>
                             </div>
-                            <hr className="profile-divider"/>
+                            <hr className="profile-divider" />
                             <h5>Языки</h5>
                             <div className="profile-sections">
                                 {languages.length > 0 ? (
                                     languages.map((language, index) => (
-                                        <p key={index} className="section-p">{language}</p>
+                                        <p key={`${language}-${index}`} className="section-p">{language}</p>
                                     ))
                                 ) : (
                                     <p className="section-p">Нет решённых задач с указанием языка</p>
                                 )}
                             </div>
-                            <hr className="profile-divider"/>
+                            <hr className="profile-divider" />
                         </div>
                     ) : (
                         <div className="loading-placeholder">Загрузка данных...</div>
@@ -251,18 +234,15 @@ const Profile = () => {
                             activeIndex={activeTab}
                             onTabChange={(e) => setActiveTab(e.index)}
                         />
-
                         <div className="tab-content">
                             {activeTab === 0 ? (
                                 <div>
                                     {currentTasks.length > 0 ? (
                                         <div className="tasks-list">
-                                            {currentTasks.map((task) => (
-                                                <div key={task.id} className="task-card">
+                                            {currentTasks.map((task, index) => (
+                                                <div key={`${task.id}-${index}`} className="task-card">
                                                     <div className="profil-inf">
-                                                        <p>
-                                                            <strong>Сложность:</strong> {renderStars(Number(task.difficulty))}
-                                                        </p>
+                                                        <p><strong>Сложность:</strong> {renderStars(Number(task.difficulty))}</p>
                                                         <p><strong>Язык:</strong> {task.language}</p>
                                                     </div>
                                                     <h5>{task.title}</h5>
