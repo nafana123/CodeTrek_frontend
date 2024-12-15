@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useRef, useState} from "react";
 import { TabMenu } from "primereact/tabmenu";
 import { Paginator } from "primereact/paginator";
 import Sidebars from "../../components/Sidebars/Sidebars";
@@ -6,6 +6,7 @@ import axiosInstance from "../../axiosInstance";
 import { Bar } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
 import { Button } from "primereact/button";
+import { Toast } from 'primereact/toast';
 import "./Profile.css";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -20,6 +21,7 @@ const Profile = () => {
     const tasksPerPage = 3;
     const [editLogin, setEditLogin] = useState('');
     const [editEmail, setEditEmail] = useState('');
+    const toast = useRef(null);
 
     const items = [
         { label: "Решённые задачи", icon: "pi pi-fw pi-check" },
@@ -42,6 +44,7 @@ const Profile = () => {
                 },
             });
 
+            console.log(response.data)
             const { user, solvedTasks } = response.data;
             setUser(user);
             setSolvedTasks(solvedTasks);
@@ -60,14 +63,25 @@ const Profile = () => {
             const token = localStorage.getItem("token");
             const response = await axiosInstance.patch("/user/profile/edit", {
                 login: editLogin,
-                email: editEmail
+                email: editEmail,
             }, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     "Content-Type": "application/json",
                 },
             });
-            setUser(response.data);
+
+            setUser((prevUser) => ({
+                ...prevUser,
+                login: editLogin,
+                email: editEmail,
+            }));
+            toast.current.show({
+                severity: 'success',
+                summary: 'Данные успешно обновлены',
+                life: 3500
+            });
+
         } catch (error) {
             console.error("Ошибка при обновлении данных:", error);
             alert('Произошла ошибка при обновлении данных.');
@@ -124,8 +138,9 @@ const Profile = () => {
     };
 
     const getInitials = (username) => {
+        if (!username) return '';
         const nameParts = username.split(" ");
-        return nameParts[0][0].toUpperCase() + (nameParts[1]?.[0]?.toUpperCase() || "");
+        return (nameParts[0]?.[0]?.toUpperCase() || '') + (nameParts[1]?.[0]?.toUpperCase() || '');
     };
 
     const indexOfFirstTask = currentPage * tasksPerPage;
@@ -227,7 +242,7 @@ const Profile = () => {
                             }}
                         />
                     </div>
-
+                    <Toast ref={toast} position="top-right" />
                     <div className="lower-box">
                         <TabMenu
                             model={items}
