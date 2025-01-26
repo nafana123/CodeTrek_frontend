@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Sidebars from "../../components/Sidebars/Sidebars";
+import Sidebars from "../../Components/Sidebars/Sidebars";
 import axiosInstance from '../../axiosInstance';
 import './AllTasks.css';
 import { Button } from "primereact/button";

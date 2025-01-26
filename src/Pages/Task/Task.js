@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Sidebars from "../../components/Sidebars/Sidebars";
+import Sidebars from "../../Components/Sidebars/Sidebars";
 import {useNavigate, useParams} from 'react-router-dom';
 import axiosInstance from '../../axiosInstance';
 import CodeMirror from '@uiw/react-codemirror';
@@ -66,7 +66,7 @@ const Task = () => {
             try {
                 const token = localStorage.getItem('token');
 
-                    const response = await axiosInstance.post(`/submit/task/${id}`,
+                    const response = await axiosInstance.post(`/submit/task/${id}/${language}`,
                         {
                             code
                         },

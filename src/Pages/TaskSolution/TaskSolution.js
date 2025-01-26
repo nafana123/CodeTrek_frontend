@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import Sidebars from "../../components/Sidebars/Sidebars";
+import Sidebars from "../../Components/Sidebars/Sidebars";
 import axiosInstance from '../../axiosInstance';
 import { Paginator } from 'primereact/paginator';
 import 'primereact/resources/primereact.min.css';
@@ -14,24 +14,27 @@ import {Button} from "primereact/button";
 
 const TaskSolution = () => {
     const { id, language } = useParams();
-    const navigate = useNavigate(); // Хук для навигации
+    const navigate = useNavigate();
     const [sidebarVisible, setSidebarVisible] = useState(true);
     const [userSolvedTask, setUserSolvedTask] = useState(null);
+    const [userCode, setUserCode] = useState(null);
     const [solvedTasksList, setSolvedTasksList] = useState([]);
     const [currentPage, setCurrentPage] = useState(0);
-    const [pageSize] = useState(7);
+    const [pageSize] = useState(5);
 
     const taskOutput = async () => {
         const token = localStorage.getItem('token');
         try {
-            const response = await axiosInstance.get(`/output/task/${id}`, {
+            const response = await axiosInstance.get(`/output/task/${id}/${language}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json',
                 }
             });
+            console.log(response.data.userSolvedTask)
             setUserSolvedTask(response.data.userSolvedTask);
             setSolvedTasksList(response.data.solvedTasksList);
+            setUserCode(response.data.userCode);
         } catch (err) {
             console.log('ошибка', err);
         }
@@ -51,8 +54,8 @@ const TaskSolution = () => {
     );
 
     const handleNavigation = (event) => {
-        event.preventDefault(); // Останавливаем стандартное поведение ссылки
-        navigate("/all/tasks"); // Программная навигация
+        event.preventDefault();
+        navigate("/all/tasks");
     };
 
     return (
@@ -63,21 +66,21 @@ const TaskSolution = () => {
                 {userSolvedTask && (
                     <div className="task-content">
                         <div className="task-infos">
-                            <h2>{userSolvedTask.task.title || 'Задача не найдена'}</h2>
-                            <p>{userSolvedTask.task.description || 'Описание недоступно'}</p>
+                            <h2>{userSolvedTask.title || 'Задача не найдена'}</h2>
+                            <p>{userSolvedTask.description || 'Описание недоступно'}</p>
 
                             <div className="examples">
                                 <h3>Пример:</h3>
                                 <div className="task-examples">
-                                    <p><strong>Вход:</strong> {userSolvedTask.task.input || 'Описание недоступно'}</p>
-                                    <p><strong>Выход:</strong> {userSolvedTask.task.output || 'Описание недоступно'}</p>
+                                    <p><strong>Вход:</strong> {userSolvedTask.input || 'Описание недоступно'}</p>
+                                    <p><strong>Выход:</strong> {userSolvedTask.output || 'Описание недоступно'}</p>
                                 </div>
                             </div>
                             <div className="user-code">
                                 <pre><strong>Ваш код:</strong></pre>
                                 <pre>
                                 <CodeMirror
-                                    value={userSolvedTask.code}
+                                    value={userCode}
                                     theme={dracula}
                                     extensions={[javascript({jsx: true})]}
                                     editable={false}
@@ -92,7 +95,7 @@ const TaskSolution = () => {
                         </div>
                         <div className="task-detailss">
                             <p><strong>Уровень
-                                сложности:</strong> {renderStars(userSolvedTask.task.difficulty.level || 0)}</p>
+                                сложности:</strong> {renderStars(userSolvedTask.difficulty.level || 0)}</p>
                             <p><strong>Язык:</strong> {language || 'Не указан'}</p>
                         </div>
                     </div>

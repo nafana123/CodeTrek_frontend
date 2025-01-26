@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from "react";
 import { TabMenu } from "primereact/tabmenu";
 import { Paginator } from "primereact/paginator";
-import Sidebars from "../../components/Sidebars/Sidebars";
+import Sidebars from "../../Components/Sidebars/Sidebars";
 import axiosInstance from "../../axiosInstance";
 import { Bar } from "react-chartjs-2";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
@@ -44,7 +44,6 @@ const Profile = () => {
                 },
             });
 
-            console.log(response.data)
             const { user, solvedTasks } = response.data;
             setUser(user);
             setSolvedTasks(solvedTasks);

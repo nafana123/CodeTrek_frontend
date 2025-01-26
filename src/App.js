@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import Header from './components/Header/Header';
+import Header from './Components/Header/Header';
 import 'primereact/resources/themes/saga-green/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter as Router } from 'react-router-dom';
 import AppRoutes from './Routes';
-import Footer from "./components/Footer/Footer";
+import Footer from "./Components/Footer/Footer";
 import { jwtDecode } from 'jwt-decode';
 
 function App() {
