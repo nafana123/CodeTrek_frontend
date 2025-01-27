@@ -125,3 +125,26 @@
     background-color: #00FF00;
     color: #000;
 }
+
+.task-header-icons {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.task-icon {
+    font-size: 20px;
+    color: #bbb;
+    cursor: pointer;
+    transition: transform 0.3s, color 0.3s;
+}
+
+.task-icon:hover {
+    transform: scale(1.2);
+}
+.favorite {
+    color: red;
+}
+
+

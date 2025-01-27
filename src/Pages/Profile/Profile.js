@@ -22,10 +22,14 @@ const Profile = () => {
     const [editLogin, setEditLogin] = useState('');
     const [editEmail, setEditEmail] = useState('');
     const toast = useRef(null);
+    const [favoriteTasks, setFavoriteTasks] = useState([]);
+
 
     const items = [
         { label: "Решённые задачи", icon: "pi pi-fw pi-check" },
-        { label: "Данные", icon: "pi pi-fw pi-info-circle" }
+        { label: "Данные", icon: "pi pi-fw pi-info-circle" },
+        { label: "Избранное", icon: "pi pi-fw pi-heart" }
+
     ];
 
     const renderStars = (difficulty) => {
@@ -54,6 +58,21 @@ const Profile = () => {
             setLanguages(uniqueLanguages);
         } catch (error) {
             console.error("Ошибка при получении данных пользователя:", error);
+        }
+    };
+
+    const getFavoriteTasks = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            const response = await axiosInstance.get("/user/favorites", {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            });
+            setFavoriteTasks(response.data);
+        } catch (error) {
+            console.error("Ошибка при получении избранных задач:", error);
         }
     };
 
@@ -89,6 +108,8 @@ const Profile = () => {
 
     useEffect(() => {
         getDataUser();
+        getFavoriteTasks();
+
     }, []);
 
     const getChartData = (tasks) => {
@@ -177,8 +198,8 @@ const Profile = () => {
                                 </div>
                                 <div className="profile-section">
                                     <span className="section-icon">❤️</span>
-                                    <p className="section-p">Понравившиеся</p>
-                                    <p className="section-p">0</p>
+                                    <p className="section-p">Избранное</p>
+                                    <p className="section-p">{favoriteTasks.length}</p>
                                 </div>
                             </div>
                             <hr className="profile-divider" />
@@ -249,7 +270,7 @@ const Profile = () => {
                             onTabChange={(e) => setActiveTab(e.index)}
                         />
                         <div className="tab-content">
-                            {activeTab === 0 ? (
+                            {activeTab === 0 && (
                                 <div>
                                     {currentTasks.length > 0 ? (
                                         <div className="tasks-list">
@@ -274,7 +295,8 @@ const Profile = () => {
                                         <p>Нет решённых задач</p>
                                     )}
                                 </div>
-                            ) : (
+                            )}
+                            {activeTab === 1 && (
                                 <div className="edit-profile-form">
                                     <div className="input-group">
                                         <label htmlFor="login">Логин</label>
@@ -299,6 +321,25 @@ const Profile = () => {
                                         className="pButton pButtonSecondarysProfile"
                                         onClick={handleSaveChanges}
                                     />
+                                </div>
+                            )}
+
+                            {activeTab === 2 && (
+                                <div>
+                                    {favoriteTasks.length > 0 ? (
+                                        <div className="tasks-list">
+                                            {favoriteTasks.map((task, index) => (
+                                                <div key={index} className="task-card">
+                                                    <div className="profil-inf">
+                                                        <p><strong>Сложность:</strong> {renderStars(Number(task.difficulty))}</p>
+                                                    </div>
+                                                    <h5>{task.title}</h5>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <p>Нет избранных задач</p>
+                                    )}
                                 </div>
                             )}
                         </div>
