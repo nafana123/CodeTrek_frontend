@@ -2,9 +2,34 @@ import React, { useEffect, useState } from "react";
 import Sidebars from "../../Components/Sidebars/Sidebars";
 import axiosInstance from '../../axiosInstance';
 import './AllTasks.css';
-import { Button } from "primereact/button";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
+import php from '../../Img/language/php-programming-language (1).png';
+import javaSvripts from '../../Img/language/js-file.png';
+import python from '../../Img/language/py-file.png';
+import c from '../../Img/language/c-logo.png';
+import csharp from '../../Img/language/c#.png';
+import java from '../../Img/language/java.png';
+import swift from '../../Img/language/swift.png';
+import typeScript from '../../Img/language/typescript.png';
+import phpHover from '../../Img/language/img_3.png';
+import jsHover from '../../Img/language/img_4.png';
+import pythonHover from '../../Img/language/img_5.png';
+import cHover from '../../Img/language/img_6.png';
+import csharpHover from '../../Img/language/img_7.png';
+import swiftHover from '../../Img/language/img_8.png';
+import typeScriptHover from '../../Img/language/img_9.png';
+import javaHover from "../../Img/language/img_2.png";
 
+const languageImages = {
+    php: { src: php, hoverSrc: phpHover },
+    javaScript: { src: javaSvripts, hoverSrc: jsHover },
+    python: { src: python, hoverSrc: pythonHover },
+    c: { src: c, hoverSrc: cHover },
+    csharp: { src: csharp, hoverSrc: csharpHover },
+    java: { src: java, hoverSrc: javaHover },
+    swift: { src: swift, hoverSrc: swiftHover },
+    typeScript: { src: typeScript, hoverSrc: typeScriptHover }
+};
 
 const AllTasks = () => {
     const [sidebarVisible, setSidebarVisible] = useState(true);
@@ -47,33 +72,39 @@ const AllTasks = () => {
                     tasks.map((task) => (
                         <div key={task.id} className="task-all-item">
                             <div className="task-all-info">
-                                <h2>{task.title || 'Задача не найдена'}</h2>
+                                <div className="task-header">
+                                    <h2>{task.title || 'Задача не найдена'}</h2>
+                                    <div className="task-difficulty">
+                                        <strong>Уровень
+                                            сложности:</strong> {renderStars(parseInt(task.difficulty)) || 'Не указан'}
+                                    </div>
+                                </div>
                                 <p>{task.description || 'Описание недоступно'}</p>
+                                <h3>Пример:</h3>
 
                                 <div className="task-example-section">
-                                    <h3>Пример:</h3>
                                     <div className="task-example">
                                         <p><strong>Вход:</strong> {task.input || 'Описание недоступно'}</p>
                                         <p><strong>Выход:</strong> {task.output || 'Описание недоступно'}</p>
                                     </div>
+                                    <div className="language-selector">
+                                        <div className="language-list">
+                                            {task.languages?.map((lang, index) => (
+                                                <Link key={index} to={`/task/${task.id}/${lang}`}>
+                                                    <div className="language-image-wrapper">
+                                                        <img
+                                                            src={languageImages[lang]?.src}
+                                                            alt={lang}
+                                                            className="language-image"
+                                                            onMouseEnter={(e) => (e.target.src = languageImages[lang]?.hoverSrc)}
+                                                            onMouseLeave={(e) => (e.target.src = languageImages[lang]?.src)}
+                                                        />
+                                                    </div>
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    </div>
                                 </div>
-                                <Link to={`/task/${task.id}/${task.languages.join(', ')}`}>
-
-                                <Button
-                                    label="Выбрать задачу"
-                                    className="pButton task-buttons"
-                                    onClick={() => console.log(`Задача ${task.id} выбрана`)}
-                                />
-                                </Link>
-
-                            </div>
-                            <div className="task-details-task">
-                                <p>
-                                    <strong>Уровень сложности:</strong> {renderStars(parseInt(task.difficulty)) || 'Не указан'}
-                                </p>
-                                <p>
-                                    <strong>Язык:</strong> {task.languages?.join(', ') || 'Не указан'}
-                                </p>
                             </div>
                         </div>
                     ))
