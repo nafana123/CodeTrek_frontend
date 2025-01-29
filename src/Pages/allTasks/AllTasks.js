@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Sidebars from "../../Components/Sidebars/Sidebars";
 import axiosInstance from '../../axiosInstance';
 import './AllTasks.css';
@@ -19,7 +19,6 @@ import csharpHover from '../../Img/language/img_7.png';
 import swiftHover from '../../Img/language/img_8.png';
 import typeScriptHover from '../../Img/language/img_9.png';
 import javaHover from "../../Img/language/img_2.png";
-import { Toast } from 'primereact/toast';
 import { FaHeart, FaComments, FaCheckCircle } from 'react-icons/fa';
 
 const languageImages = {
@@ -37,7 +36,6 @@ const AllTasks = () => {
     const [sidebarVisible, setSidebarVisible] = useState(true);
     const [tasks, setTasks] = useState([]);
     const [favorites, setFavorites] = useState(new Set());
-    const toast = useRef(null);
 
     const allTasks = async () => {
         const token = localStorage.getItem('token');
@@ -49,6 +47,8 @@ const AllTasks = () => {
                 }
             });
             setTasks(response.data);
+            const initialFavorites = new Set(response.data.filter(task => task.isFavorite).map(task => task.id));
+            setFavorites(initialFavorites);
         } catch (err) {
             console.log('Ошибка при загрузке задач', err);
         }
@@ -75,35 +75,22 @@ const AllTasks = () => {
                     const updatedFavorites = new Set(prevFavorites);
                     if (isFavorite) {
                         updatedFavorites.delete(taskId);
-                        toast.current.show({
-                            severity: 'success',
-                            detail: 'Задача удаленна из избранного',
-                            life: 3500
-                        });
                     } else {
                         updatedFavorites.add(taskId);
-                        toast.current.show({
-                            severity: 'success',
-                            detail: 'Задача добавленна в избранное',
-                            life: 3500
-                        });
                     }
                     return updatedFavorites;
                 });
 
-                setTasks((prevTasks) => {
-                    return prevTasks.map((task) =>
-                        task.id === taskId
-                            ? { ...task, isFavorite: !isFavorite }
-                            : task
-                    );
-                });
+                setTasks((prevTasks) => prevTasks.map((task) =>
+                    task.id === taskId
+                        ? { ...task, isFavorite: !isFavorite }
+                        : task
+                ));
             }
         } catch (err) {
             console.log('Ошибка при добавлении/удалении задачи в избранное', err);
         }
     };
-
 
     const renderStars = (difficulty) => {
         const stars = [];
@@ -123,15 +110,16 @@ const AllTasks = () => {
                         <div key={task.id} className="task-all-item">
                             <div className="task-all-info">
                                 <div className="task-header">
-                                    <h2>{task.title || 'Задача не найдена'}</h2>
-                                    <div className="task-difficulty">
+                                    <Link to={`/details/task/${task.id}`}>
+                                        <h2>{task.title || 'Задача не найдена'}</h2>
+                                    </Link>                                    <div className="task-difficulty">
                                         <strong>Уровень сложности:</strong> {renderStars(parseInt(task.difficulty)) || 'Не указан'}
                                     </div>
                                 </div>
                                 <div className="task-header-icons">
                                     <FaHeart
-                                        className={`task-icon ${task.isFavorite ? 'favorite' : ''}`}
-                                        title={task.isFavorite ? "Удалить из избранного" : "Добавить в избранное"}
+                                        className={`task-icon ${favorites.has(task.id) ? 'favorite' : ''}`}
+                                        title={favorites.has(task.id) ? "Удалить из избранного" : "Добавить в избранное"}
                                         onClick={() => handleFavoriteToggle(task.id)}
                                     />
                                     <FaComments className="task-icon" title="Обсудить задачу" />
@@ -170,7 +158,6 @@ const AllTasks = () => {
                     <p>Задачи не найдены</p>
                 )}
             </div>
-            <Toast ref={toast} position="top-right" autoClose={3500} hideProgressBar={false} />
         </div>
     );
 };

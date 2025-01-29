@@ -32,6 +32,8 @@
     font-size: 24px;
     color: #00FF00;
     margin-bottom: 10px;
+    transition: transform 0.3s, font-size 0.3s;
+    cursor: pointer;
 }
 
 .task-header {
@@ -146,5 +148,10 @@
 .favorite {
     color: red;
 }
+
+.task-all-item h2:hover {
+    transform: scale(1.05);
+}
+
 
 

@@ -1,0 +1,170 @@
+.task-details-data {
+    display: flex;
+    flex-direction: column;
+    padding: 50px;
+    background: #1E1E1E;
+    font-family: Arial, sans-serif;
+    max-width: 100%;
+    margin: 0 auto;
+    border-radius: 10px;
+    color: #fff;
+    overflow-x: hidden;
+}
+
+.task-details-container {
+    max-width: 1250px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+h1 {
+    font-size: 2rem;
+    color: #00FF00;
+    margin-bottom: 10px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.3s, font-size 0.3s;
+}
+
+h1:hover {
+    transform: scale(1.05);
+}
+
+.task-difficulty {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #bbb;
+    margin-bottom: 10px;
+}
+
+.task-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.language-list-details {
+    display: flex;
+    gap: 15px;
+}
+
+.language-item {
+    width: 50px;
+    height: 50px;
+    margin-top: -50px;
+}
+
+.language-image-details {
+    width: 100%;
+    transition: transform 0.2s ease;
+}
+
+.language-image-details:hover {
+    transform: scale(1.1);
+}
+
+hr.section-divider {
+    margin: 20px 0;
+    border: none;
+    height: 1px;
+    background-color: #00FF00;
+}
+
+.tabs {
+    display: flex;
+    gap: 40px;
+    margin: 20px 0;
+    justify-content: center;
+}
+
+.tabs span {
+    font-size: 1.2rem;
+    color: #bbb;
+    cursor: pointer;
+    padding: 5px 10px;
+    transition: color 0.3s ease, border-bottom 0.3s ease;
+}
+
+.tabs span:hover {
+    color: #00FF00;
+}
+
+.tabs .active {
+    color: #00FF00;
+    border-bottom: 2px solid #00FF00;
+}
+
+.contentes {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-height: 300px;
+}
+
+.description, .discussion {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.description h3,
+.discussion h3 {
+    font-size: 1.5rem;
+    color: #00FF00;
+}
+
+.description p,
+.discussion p {
+    font-size: 1rem;
+    color: #ddd;
+}
+
+.description h4 {
+    font-weight: bold;
+    color: #00FF00;
+}
+
+.difficulty-star {
+    color: #FFD700;
+}
+
+.task-header-icons {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.task-icon {
+    font-size: 20px;
+    color: #bbb;
+    cursor: pointer;
+    transition: transform 0.3s, color 0.3s;
+}
+
+.task-icon:hover {
+    transform: scale(1.2);
+}
+
+.favorite {
+    color: red;
+}
+
+.sidebar button {
+    background: none;
+    border: none;
+    color: #00FF00;
+    cursor: pointer;
+    font-size: 1.25rem;
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+p.input-text,
+p.output-text,
+p.description-text{
+    font-size: 20px;
+}
+
+

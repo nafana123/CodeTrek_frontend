@@ -9,6 +9,7 @@ import Task from "./Pages/Task/Task";
 import TaskSolution from "./Pages/TaskSolution/TaskSolution";
 import Profile from "./Pages/Profile/Profile";
 import Leaderboard from "./Pages/Leaderboard/Leaderboard";
+import TaskDetails from "./Pages/TaskDetails/TaskDetails"
 
 const AppRoutes = ({ user, setUser }) => {
     const isAuthenticated = () => {
@@ -32,6 +33,8 @@ const AppRoutes = ({ user, setUser }) => {
                     <Route path="/all/tasks" element={<AllTasks  user={user}  />} />
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/leaderboard" element={<Leaderboard />} />
+                    <Route path="/details/task/:id" element={<TaskDetails />} />
+
                     <Route path="*" element={<Navigate to="/dashboard" />} />
                 </>
             )}
