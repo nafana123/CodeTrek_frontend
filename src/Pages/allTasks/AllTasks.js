@@ -112,7 +112,8 @@ const AllTasks = () => {
                                 <div className="task-header">
                                     <Link to={`/details/task/${task.id}`}>
                                         <h2>{task.title || 'Задача не найдена'}</h2>
-                                    </Link>                                    <div className="task-difficulty">
+                                    </Link>
+                                    <div className="task-difficulty">
                                         <strong>Уровень сложности:</strong> {renderStars(parseInt(task.difficulty)) || 'Не указан'}
                                     </div>
                                 </div>

@@ -6,7 +6,6 @@
     font-family: Arial, sans-serif;
     max-width: 100%;
     margin: 0 auto;
-    border-radius: 10px;
     color: #fff;
     overflow-x: hidden;
 }
@@ -17,20 +16,16 @@
     width: 100%;
 }
 
-h1 {
+h1.task-details-h1 {
     font-size: 2rem;
     color: #00FF00;
     margin-bottom: 10px;
-    cursor: pointer;
     display: flex;
     justify-content: space-between;
     align-items: center;
     transition: transform 0.3s, font-size 0.3s;
 }
 
-h1:hover {
-    transform: scale(1.05);
-}
 
 .task-difficulty {
     font-size: 1rem;
@@ -66,7 +61,7 @@ h1:hover {
 }
 
 hr.section-divider {
-    margin: 20px 0;
+    margin: 15px 0;
     border: none;
     height: 1px;
     background-color: #00FF00;

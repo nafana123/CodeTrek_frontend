@@ -8,6 +8,7 @@ import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Toolti
 import { Button } from "primereact/button";
 import { Toast } from 'primereact/toast';
 import "./Profile.css";
+import { Link } from "react-router-dom";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -329,12 +330,14 @@ const Profile = () => {
                                     {favoriteTasks.length > 0 ? (
                                         <div className="tasks-list">
                                             {favoriteTasks.map((task, index) => (
+                                                <Link to={`/details/task/${task.id}`}>
                                                 <div key={index} className="task-card">
                                                     <div className="profil-inf">
                                                         <p><strong>Сложность:</strong> {renderStars(Number(task.difficulty))}</p>
                                                     </div>
                                                     <h5>{task.title}</h5>
                                                 </div>
+                                                </Link>
                                             ))}
                                         </div>
                                     ) : (

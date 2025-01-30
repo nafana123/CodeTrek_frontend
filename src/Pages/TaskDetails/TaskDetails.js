@@ -20,6 +20,7 @@ import csharpHover from '../../Img/language/img_7.png';
 import swiftHover from '../../Img/language/img_8.png';
 import typeScriptHover from '../../Img/language/img_9.png';
 import javaHover from "../../Img/language/img_2.png";
+import { FaHeart } from "react-icons/fa";
 
 const languageImages = {
     php: { src: php, hoverSrc: phpHover },
@@ -37,6 +38,7 @@ const TaskDetails = () => {
     const { id } = useParams();
     const [taskDetails, setTaskDetails] = useState(null);
     const [activeTab, setActiveTab] = useState('description');
+    const [favorites, setFavorites] = useState(new Set());
 
     const renderStars = (difficulty) => {
         const stars = [];
@@ -55,9 +57,50 @@ const TaskDetails = () => {
                     'Content-Type': 'application/json',
                 }
             });
+
             setTaskDetails(response.data);
+
+            const initialFavorites = new Set();
+            if (response.data.isFavorite) {
+                initialFavorites.add(response.data.task.id);
+            }
+            setFavorites(initialFavorites);
         } catch (err) {
-            console.log('Ошибка при загрузке задач', err);
+            console.log('Ошибка при загрузке задачи', err);
+        }
+    };
+
+    const handleFavoriteToggle = async (taskId) => {
+        const token = localStorage.getItem('token');
+        const isFavorite = favorites.has(taskId);
+
+        try {
+            await axiosInstance.post(`/tasks/${id}/favorite`, {}, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            setFavorites((prevFavorites) => {
+                const updatedFavorites = new Set(prevFavorites);
+                if (isFavorite) {
+                    updatedFavorites.delete(taskId);
+                } else {
+                    updatedFavorites.add(taskId);
+                }
+                return updatedFavorites;
+            });
+
+            setTaskDetails((prevTaskDetails) => ({
+                ...prevTaskDetails,
+                task: {
+                    ...prevTaskDetails.task,
+                    isFavorite: !isFavorite
+                }
+            }));
+        } catch (err) {
+            console.log('Ошибка при добавлении/удалении задачи в избранное', err);
         }
     };
 
@@ -73,13 +116,11 @@ const TaskDetails = () => {
         <div className="task-details-data">
             <Sidebars visible={sidebarVisible} onHide={() => setSidebarVisible(false)} />
             <div className="task-details-container">
-                <h1>{taskDetails.task.title}</h1>
-
+                <h1 className='task-details-h1'>{taskDetails.task.title}</h1>
                 <div className="task-header">
                     <p className="task-difficulty">
                         <strong>Сложность:</strong> {renderStars(parseInt(taskDetails.task.difficulty.level))}
                     </p>
-
                     <div className="language-selector">
                         <div className="language-list-details">
                             {taskDetails?.languages?.length ? (
@@ -100,7 +141,13 @@ const TaskDetails = () => {
                         </div>
                     </div>
                 </div>
-
+                <div className="task-header-icons">
+                    <FaHeart
+                        className={`task-icon ${favorites.has(taskDetails.task.id) ? 'favorite' : ''}`}
+                        title={favorites.has(taskDetails.task.id) ? "Удалить из избранного" : "Добавить в избранное"}
+                        onClick={() => handleFavoriteToggle(taskDetails.task.id)} // Используй id задачи
+                    />
+                </div>
                 <hr className="section-divider" />
 
                 <div className="tabs">
