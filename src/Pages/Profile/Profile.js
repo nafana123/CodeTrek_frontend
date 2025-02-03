@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { TabMenu } from "primereact/tabmenu";
 import { Paginator } from "primereact/paginator";
 import Sidebars from "../../Components/Sidebars/Sidebars";
@@ -24,13 +24,13 @@ const Profile = () => {
     const [editEmail, setEditEmail] = useState('');
     const toast = useRef(null);
     const [favoriteTasks, setFavoriteTasks] = useState([]);
-
+    const [discussion, setDiscussion] = useState([]);
 
     const items = [
         { label: "Решённые задачи", icon: "pi pi-fw pi-check" },
         { label: "Данные", icon: "pi pi-fw pi-info-circle" },
-        { label: "Избранное", icon: "pi pi-fw pi-heart" }
-
+        { label: "Избранное", icon: "pi pi-fw pi-heart" },
+        { label: "Обсуждение", icon: "pi pi-fw pi-book" },
     ];
 
     const renderStars = (difficulty) => {
@@ -60,6 +60,39 @@ const Profile = () => {
         } catch (error) {
             console.error("Ошибка при получении данных пользователя:", error);
         }
+    };
+
+    const getUserDiscussion = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            const response = await axiosInstance.get("/user/discussion", {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            });
+            const groupedDiscussion = groupDiscussionByTask(response.data);
+            setDiscussion(groupedDiscussion);
+        } catch (error) {
+            console.error("Ошибка при получении обсуждений:", error);
+        }
+    };
+
+    const groupDiscussionByTask = (discussionData) => {
+        const grouped = discussionData.reduce((acc, item) => {
+            if (!acc[item.taskId]) {
+                acc[item.taskId] = {
+                    taskTitle: item.taskTitle,
+                    taskId: item.taskId,
+                    difficulty: item.difficulty,
+                    messages: [],
+                };
+            }
+            acc[item.taskId].messages.push(item.message);
+            return acc;
+        }, {});
+
+        return Object.values(grouped);
     };
 
     const getFavoriteTasks = async () => {
@@ -110,7 +143,7 @@ const Profile = () => {
     useEffect(() => {
         getDataUser();
         getFavoriteTasks();
-
+        getUserDiscussion();
     }, []);
 
     const getChartData = (tasks) => {
@@ -195,7 +228,7 @@ const Profile = () => {
                                 <div className="profile-section">
                                     <span className="section-icon">💬</span>
                                     <p className="section-p">Обсуждение</p>
-                                    <p className="section-p">0</p>
+                                    <p className="section-p">{discussion.length}</p>
                                 </div>
                                 <div className="profile-section">
                                     <span className="section-icon">❤️</span>
@@ -278,7 +311,9 @@ const Profile = () => {
                                             {currentTasks.map((task, index) => (
                                                 <div key={`${task.id}-${index}`} className="task-card">
                                                     <div className="profil-inf">
-                                                        <p><strong>Сложность:</strong> {renderStars(Number(task.difficulty))}</p>
+                                                        <p>
+                                                            <strong>Сложность:</strong> {renderStars(Number(task.difficulty))}
+                                                        </p>
                                                         <p><strong>Язык:</strong> {task.language}</p>
                                                     </div>
                                                     <h5>{task.title}</h5>
@@ -330,13 +365,15 @@ const Profile = () => {
                                     {favoriteTasks.length > 0 ? (
                                         <div className="tasks-list">
                                             {favoriteTasks.map((task, index) => (
-                                                <Link to={`/details/task/${task.id}`}>
-                                                <div key={index} className="task-card">
-                                                    <div className="profil-inf">
-                                                        <p><strong>Сложность:</strong> {renderStars(Number(task.difficulty))}</p>
+                                                <Link to={`/details/task/${task.id}`} key={index}>
+                                                    <div className="task-card">
+                                                        <div className="profil-inf">
+                                                            <p>
+                                                                <strong>Сложность:</strong> {renderStars(Number(task.difficulty))}
+                                                            </p>
+                                                        </div>
+                                                        <h5>{task.title}</h5>
                                                     </div>
-                                                    <h5>{task.title}</h5>
-                                                </div>
                                                 </Link>
                                             ))}
                                         </div>
@@ -345,6 +382,36 @@ const Profile = () => {
                                     )}
                                 </div>
                             )}
+
+                            <div className="tab-content">
+                                {activeTab === 3 && (
+                                    <div>
+                                        {discussion.length > 0 ? (
+                                            <div className="tasks-list">
+                                                {discussion.map((task, index) => (
+                                                    <div key={task.taskId} className="task-card">
+                                                        <div className="profil-inf">
+                                                            <p>
+                                                                <strong>Сложность:</strong> {renderStars(Number(task.difficulty))}
+                                                            </p>
+                                                        </div>
+                                                        <h5>{task.taskTitle}</h5>
+                                                        <div>
+                                                            {task.messages.map((message, idx) => (
+                                                                <div key={idx} className="comment">
+                                                                    <p dangerouslySetInnerHTML={{__html: message}}></p>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <p>Нет задач для обсуждения</p>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -21,6 +21,7 @@ import swiftHover from '../../Img/language/img_8.png';
 import typeScriptHover from '../../Img/language/img_9.png';
 import javaHover from "../../Img/language/img_2.png";
 import { FaHeart } from "react-icons/fa";
+import { Paginator } from 'primereact/paginator';
 
 const languageImages = {
     php: { src: php, hoverSrc: phpHover },
@@ -39,6 +40,12 @@ const TaskDetails = () => {
     const [taskDetails, setTaskDetails] = useState(null);
     const [activeTab, setActiveTab] = useState('description');
     const [favorites, setFavorites] = useState(new Set());
+    const [discussionMessages, setDiscussionMessages] = useState([]);
+    const [newMessage, setNewMessage] = useState("");
+    const [replyTo, setReplyTo] = useState(null);
+    const [currentPage, setCurrentPage] = useState(0);
+    const [pageSize] = useState(5);
+
 
     const renderStars = (difficulty) => {
         const stars = [];
@@ -57,7 +64,6 @@ const TaskDetails = () => {
                     'Content-Type': 'application/json',
                 }
             });
-
             setTaskDetails(response.data);
 
             const initialFavorites = new Set();
@@ -69,11 +75,32 @@ const TaskDetails = () => {
             console.log('Ошибка при загрузке задачи', err);
         }
     };
+    const paginatedSolutions = discussionMessages.slice(
+        currentPage * pageSize,
+        (currentPage + 1) * pageSize
+    );
+
+    const onPageChange = (event) => {
+        setCurrentPage(event.first / event.rows);
+    }
+    const fetchDiscussionMessages = async () => {
+        const token = localStorage.getItem('token');
+        try {
+            const response = await axiosInstance.get(`/discussion/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                }
+            });
+            setDiscussionMessages(response.data);
+        } catch (err) {
+            console.log('Ошибка при загрузке обсуждений', err);
+        }
+    };
 
     const handleFavoriteToggle = async (taskId) => {
         const token = localStorage.getItem('token');
         const isFavorite = favorites.has(taskId);
-
         try {
             await axiosInstance.post(`/tasks/${id}/favorite`, {}, {
                 headers: {
@@ -104,8 +131,45 @@ const TaskDetails = () => {
         }
     };
 
+    const handleSendMessage = async () => {
+        const token = localStorage.getItem('token');
+        if (newMessage.trim() === "") return;
+
+        const messageData = {
+            message: newMessage,
+            replyTo: replyTo ? replyTo.id : null,
+        };
+
+        try {
+            await axiosInstance.post(`/add/discussion/${id}`, messageData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                }
+            });
+
+            setDiscussionMessages((prevMessages) => [
+                ...prevMessages,
+                {
+                    user: { login: "Ты" },
+                    message: newMessage,
+                    replyTo
+                }
+            ]);
+            setNewMessage("");
+            setReplyTo(null);
+        } catch (err) {
+            console.log('Ошибка при отправке сообщения', err);
+        }
+    };
+
+    const handleReplyClick = (message) => {
+        setReplyTo(message);
+    };
+
     useEffect(() => {
         taskDetailsData();
+        fetchDiscussionMessages();
     }, [id]);
 
     if (!taskDetails) {
@@ -116,7 +180,7 @@ const TaskDetails = () => {
         <div className="task-details-data">
             <Sidebars visible={sidebarVisible} onHide={() => setSidebarVisible(false)} />
             <div className="task-details-container">
-                <h1 className='task-details-h1'>{taskDetails.task.title}</h1>
+                <h1 className="task-details-h1">{taskDetails.task.title}</h1>
                 <div className="task-header">
                     <p className="task-difficulty">
                         <strong>Сложность:</strong> {renderStars(parseInt(taskDetails.task.difficulty.level))}
@@ -141,13 +205,15 @@ const TaskDetails = () => {
                         </div>
                     </div>
                 </div>
+
                 <div className="task-header-icons">
                     <FaHeart
                         className={`task-icon ${favorites.has(taskDetails.task.id) ? 'favorite' : ''}`}
                         title={favorites.has(taskDetails.task.id) ? "Удалить из избранного" : "Добавить в избранное"}
-                        onClick={() => handleFavoriteToggle(taskDetails.task.id)} // Используй id задачи
+                        onClick={() => handleFavoriteToggle(taskDetails.task.id)}
                     />
                 </div>
+
                 <hr className="section-divider" />
 
                 <div className="tabs">
@@ -176,9 +242,60 @@ const TaskDetails = () => {
                         </div>
                     ) : (
                         <div className="discussion">
-                            <h3>Discussion:</h3>
-                            <p className="discussion-text">Discussion section goes here (e.g., a chat component or comments).</p>
+                            <div className="send-message">
+                                {replyTo && (
+                                    <div className="reply-to-message">
+                                        <p><strong>Ответ на: </strong>{replyTo.message}</p>
+                                    </div>
+                                )}
+                                <textarea
+                                    value={newMessage}
+                                    onChange={(e) => setNewMessage(e.target.value)}
+                                    placeholder="Введите ваше сообщение..."
+                                    className="message-input"
+                                />
+                                <button className="send-message-button" onClick={handleSendMessage}>
+                                    Отправить
+                                </button>
+                            </div>
+
+                            {paginatedSolutions.map((msg, index) => (
+                                <div key={index} className="discussion-message">
+                                    <div className="message-header">
+                                        <strong>{msg.isCurrentUser ? "Ты" : msg.user.login}:</strong>
+                                    </div>
+                                    <p>{msg.message}</p>
+
+                                    {/* Отображение ответов */}
+                                    {msg.replies && msg.replies.length > 0 && (
+                                        <div className="replies">
+                                            {msg.replies.map((reply, replyIndex) => (
+                                                <div key={replyIndex} className="reply-message">
+                                                    <div className="message-header">
+                                                        <strong>{reply.isCurrentUser ? "Ты" : reply.user.login}:</strong>
+                                                    </div>
+                                                    <p className="reply-text">{reply.replyToMessage}</p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    <button onClick={() => handleReplyClick(msg)} className="reply-button">
+                                        Ответить
+                                    </button>
+                                </div>
+                            ))}
+
+                            <Paginator
+                                first={currentPage * pageSize}
+                                rows={pageSize}
+                                totalRecords={discussionMessages.length}
+                                onPageChange={onPageChange}
+                                template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink"
+                                className="p-mt-3"
+                            />
                         </div>
+
                     )}
                 </div>
             </div>

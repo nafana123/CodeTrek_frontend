@@ -26,7 +26,6 @@ h1.task-details-h1 {
     transition: transform 0.3s, font-size 0.3s;
 }
 
-
 .task-difficulty {
     font-size: 1rem;
     line-height: 1.6;
@@ -156,10 +155,171 @@ hr.section-divider {
     font-size: 1.25rem;
     transition: transform 0.3s ease, color 0.3s ease;
 }
+
 p.input-text,
 p.output-text,
-p.description-text{
+p.description-text {
     font-size: 20px;
 }
 
+.discussion h3 {
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: #00FF00;
+    text-transform: uppercase;
+    margin-bottom: 15px;
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 4px rgba(0, 255, 0, 0.6);
+}
+
+.discussion-messages {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow-y: auto;
+    max-height: 350px;
+    padding-right: 10px;
+    padding-left: 10px;
+    margin-bottom: 10px;
+    opacity: 0;
+    animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.discussion-message {
+    background: linear-gradient(145deg, #1c1c1c, #2d2d2d);
+    padding: 15px 20px;
+    border-radius: 10px;
+    color: #fff;
+    position: relative;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    opacity: 0;
+    animation: messageAppear 0.4s ease forwards;
+}
+
+@keyframes messageAppear {
+    0% {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.discussion-message .message-header {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.discussion-message .message-header strong {
+    font-size: 1.1rem;
+    color: #00FF00;
+    text-transform: capitalize;
+    font-weight: normal;
+}
+
+.discussion-message p {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #ddd;
+    word-wrap: break-word;
+    margin-bottom: 10px;
+}
+
+.send-message {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.send-message textarea {
+    width: 100%;
+    padding: 12px 18px;
+    border-radius: 10px;
+    background-color: #333;
+    border: none;
+    color: #fff;
+    font-size: 1rem;
+    resize: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    transition: box-shadow 0.3s ease, background-color 0.3s ease;
+    text-rendering: optimizeLegibility;
+}
+
+.send-message textarea:focus {
+    outline: none;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.7);
+    background-color: #444;
+}
+
+.send-message button {
+    align-self: flex-end;
+    padding: 10px 25px;
+    background-color: #00FF00;
+    color: #282828;
+    border-radius: 10px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    position: relative;
+}
+
+.send-message button:hover {
+    background-color: #00cc00;
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.4);
+}
+
+.send-message button:active {
+    transform: scale(1);
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.4);
+}
+
+.discussion-messages::-webkit-scrollbar {
+    width: 8px;
+}
+
+.discussion-messages::-webkit-scrollbar-thumb {
+    background-color: #00FF00;
+    border-radius: 4px;
+}
+
+.discussion-messages::-webkit-scrollbar-track {
+    background: #333;
+}
+
+
+.discussion-messages {
+    scrollbar-width: thin;
+    scrollbar-color: #00FF00 #333;
+}
+
+.discussion-messages p {
+    font-size: 1.1rem;
+    color: #aaa;
+    text-align: center;
+    margin-left: 20px;
+}
+
+.send-message textarea {
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+div.ql-editor.ql-blank{
+    color: white;
+}
 
