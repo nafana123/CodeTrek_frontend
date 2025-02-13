@@ -114,7 +114,8 @@ const AllTasks = () => {
                                         <h2>{task.title || 'Задача не найдена'}</h2>
                                     </Link>
                                     <div className="task-difficulty">
-                                        <strong>Уровень сложности:</strong> {renderStars(parseInt(task.difficulty)) || 'Не указан'}
+                                        <strong>Уровень
+                                            сложности:</strong> {renderStars(parseInt(task.difficulty)) || 'Не указан'}
                                     </div>
                                 </div>
                                 <div className="task-header-icons">
@@ -123,9 +124,20 @@ const AllTasks = () => {
                                         title={favorites.has(task.id) ? "Удалить из избранного" : "Добавить в избранное"}
                                         onClick={() => handleFavoriteToggle(task.id)}
                                     />
-                                    <FaComments className="task-icon" title="Обсудить задачу" />
-                                    <FaCheckCircle className="task-icon" title="Количество решений" />
+                                    <Link to={`/details/task/${task.id}`}>
+
+                                    <div className="task-comments">
+                                        <FaComments className="task-icon" title="Обсудить задачу"/>
+                                        <span className="task-comments-count" title="Количество обсуждений">
+                                        ({task.totalMessages})
+                                         </span>
+                                    </div>
+                                    </Link>
+
+
+                                    <FaCheckCircle className="task-icon" title="Количество решений"/>
                                 </div>
+
                                 <p>{task.description || 'Описание недоступно'}</p>
                                 <h3>Пример:</h3>
 

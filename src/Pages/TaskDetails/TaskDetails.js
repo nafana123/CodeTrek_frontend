@@ -20,8 +20,7 @@ import csharpHover from '../../Img/language/img_7.png';
 import swiftHover from '../../Img/language/img_8.png';
 import typeScriptHover from '../../Img/language/img_9.png';
 import javaHover from "../../Img/language/img_2.png";
-import { FaHeart } from "react-icons/fa";
-import { Paginator } from 'primereact/paginator';
+import { FaHeart, FaReply } from "react-icons/fa";
 
 const languageImages = {
     php: { src: php, hoverSrc: phpHover },
@@ -43,9 +42,7 @@ const TaskDetails = () => {
     const [discussionMessages, setDiscussionMessages] = useState([]);
     const [newMessage, setNewMessage] = useState("");
     const [replyTo, setReplyTo] = useState(null);
-    const [currentPage, setCurrentPage] = useState(0);
-    const [pageSize] = useState(5);
-
+    const [replyMessageId, setReplyMessageId] = useState(null);
 
     const renderStars = (difficulty) => {
         const stars = [];
@@ -59,38 +56,22 @@ const TaskDetails = () => {
         const token = localStorage.getItem('token');
         try {
             const response = await axiosInstance.get(`/details/task/${id}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                }
+                headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
             });
             setTaskDetails(response.data);
-
             const initialFavorites = new Set();
-            if (response.data.isFavorite) {
-                initialFavorites.add(response.data.task.id);
-            }
+            if (response.data.isFavorite) initialFavorites.add(response.data.task.id);
             setFavorites(initialFavorites);
         } catch (err) {
             console.log('Ошибка при загрузке задачи', err);
         }
     };
-    const paginatedSolutions = discussionMessages.slice(
-        currentPage * pageSize,
-        (currentPage + 1) * pageSize
-    );
 
-    const onPageChange = (event) => {
-        setCurrentPage(event.first / event.rows);
-    }
     const fetchDiscussionMessages = async () => {
         const token = localStorage.getItem('token');
         try {
             const response = await axiosInstance.get(`/discussion/${id}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                }
+                headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
             });
             setDiscussionMessages(response.data);
         } catch (err) {
@@ -103,19 +84,13 @@ const TaskDetails = () => {
         const isFavorite = favorites.has(taskId);
         try {
             await axiosInstance.post(`/tasks/${id}/favorite`, {}, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                }
+                headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
             });
 
             setFavorites((prevFavorites) => {
                 const updatedFavorites = new Set(prevFavorites);
-                if (isFavorite) {
-                    updatedFavorites.delete(taskId);
-                } else {
-                    updatedFavorites.add(taskId);
-                }
+                if (isFavorite) updatedFavorites.delete(taskId);
+                else updatedFavorites.add(taskId);
                 return updatedFavorites;
             });
 
@@ -142,19 +117,12 @@ const TaskDetails = () => {
 
         try {
             await axiosInstance.post(`/add/discussion/${id}`, messageData, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                }
+                headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
             });
 
             setDiscussionMessages((prevMessages) => [
                 ...prevMessages,
-                {
-                    user: { login: "Ты" },
-                    message: newMessage,
-                    replyTo
-                }
+                { user: { login: "Ты" }, message: newMessage, replyTo }
             ]);
             setNewMessage("");
             setReplyTo(null);
@@ -163,8 +131,46 @@ const TaskDetails = () => {
         }
     };
 
-    const handleReplyClick = (message) => {
-        setReplyTo(message);
+    const handleSendReply = async (discussionId) => {
+        const token = localStorage.getItem('token');
+        if (newMessage.trim() === "") return;
+
+        const messageData = { message: newMessage };
+
+        try {
+            await axiosInstance.post(`/reply/${discussionId}`, messageData, {
+                headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
+            });
+
+            setDiscussionMessages((prevMessages) => {
+                return prevMessages.map((msg) => {
+                    if (msg.id === discussionId) {
+                        return {
+                            ...msg,
+                            replies: [
+                                ...msg.replies,
+                                { user: { login: "Ты" }, replyToMessage: newMessage, createdAt: new Date().toISOString() }
+                            ]
+                        };
+                    }
+                    return msg;
+                });
+            });
+
+            setNewMessage("");
+            setReplyMessageId(null);
+        } catch (err) {
+            console.log('Ошибка при отправке ответа', err);
+        }
+    };
+    const getTotalMessagesCount = () => {
+        let totalMessages = discussionMessages.length;
+        discussionMessages.forEach(msg => {
+            if (msg.replies) {
+                totalMessages += msg.replies.length;
+            }
+        });
+        return totalMessages;
     };
 
     useEffect(() => {
@@ -172,9 +178,7 @@ const TaskDetails = () => {
         fetchDiscussionMessages();
     }, [id]);
 
-    if (!taskDetails) {
-        return <div>Loading...</div>;
-    }
+    if (!taskDetails) return <div>Loading...</div>;
 
     return (
         <div className="task-details-data">
@@ -227,7 +231,7 @@ const TaskDetails = () => {
                         onClick={() => setActiveTab('discussion')}
                         className={activeTab === 'discussion' ? 'active' : ''}
                     >
-                        Обсуждение
+                        Обсуждение ({getTotalMessagesCount()})
                     </span>
                 </div>
 
@@ -242,58 +246,59 @@ const TaskDetails = () => {
                         </div>
                     ) : (
                         <div className="discussion">
-                            <div className="send-message">
-                                {replyTo && (
-                                    <div className="reply-to-message">
-                                        <p><strong>Ответ на: </strong>{replyTo.message}</p>
-                                    </div>
-                                )}
+                            <div className="new-message">
                                 <textarea
+                                    placeholder="Напишите ваше сообщение..."
                                     value={newMessage}
                                     onChange={(e) => setNewMessage(e.target.value)}
-                                    placeholder="Введите ваше сообщение..."
-                                    className="message-input"
                                 />
-                                <button className="send-message-button" onClick={handleSendMessage}>
-                                    Отправить
-                                </button>
+                                <button onClick={handleSendMessage}>Отправить сообщение</button>
                             </div>
-
-                            {paginatedSolutions.map((msg, index) => (
-                                <div key={index} className="discussion-message">
+                            {discussionMessages.map((message) => (
+                                <div key={message.id} className="message">
                                     <div className="message-header">
-                                        <strong>{msg.isCurrentUser ? "Ты" : msg.user.login}:</strong>
+                                        <p className="message-user">
+                                            {message.isCurrentUser ? "Ты" : message.user.login}
+                                        </p>
+                                        <p className="message-date">{new Date(message.createdAt).toLocaleString()}</p>
                                     </div>
-                                    <p>{msg.message}</p>
+                                    <p>{message.message}</p>
+                                    <div className="reply-button">
+                                        <FaReply
+                                            className="reply-icon"
+                                            onClick={() => setReplyMessageId(message.id)}
+                                            title="Ответить"
+                                        />
+                                    </div>
 
-                                    {/* Отображение ответов */}
-                                    {msg.replies && msg.replies.length > 0 && (
-                                        <div className="replies">
-                                            {msg.replies.map((reply, replyIndex) => (
-                                                <div key={replyIndex} className="reply-message">
-                                                    <div className="message-header">
-                                                        <strong>{reply.isCurrentUser ? "Ты" : reply.user.login}:</strong>
-                                                    </div>
-                                                    <p className="reply-text">{reply.replyToMessage}</p>
-                                                </div>
-                                            ))}
+                                    {message.replies && message.replies.map((reply, index) => (
+                                        <div key={index} className="reply">
+                                            <div className="reply-header">
+                                                <p className="reply-user">
+                                                    {reply.isCurrentUser ? "Ты" : reply.user.login}
+                                                </p>
+                                                <p className="reply-date">{new Date(reply.createdAt).toLocaleString()}</p>
+                                            </div>
+                                            <p>{reply.replyToMessage}</p>
+                                        </div>
+                                    ))}
+
+                                    {replyMessageId === message.id && (
+                                        <div className="reply-input-container">
+                    <textarea
+                        placeholder="Напишите ваш ответ..."
+                        value={newMessage}
+                        onChange={(e) => setNewMessage(e.target.value)}
+                        className="reply-textarea"
+                    />
+                                            <button onClick={() => handleSendReply(message.id)}
+                                                    className="reply-submit-button">
+                                                Отправить ответ
+                                            </button>
                                         </div>
                                     )}
-
-                                    <button onClick={() => handleReplyClick(msg)} className="reply-button">
-                                        Ответить
-                                    </button>
                                 </div>
                             ))}
-
-                            <Paginator
-                                first={currentPage * pageSize}
-                                rows={pageSize}
-                                totalRecords={discussionMessages.length}
-                                onPageChange={onPageChange}
-                                template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink"
-                                className="p-mt-3"
-                            />
                         </div>
 
                     )}
