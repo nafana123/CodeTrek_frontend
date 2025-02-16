@@ -98,6 +98,7 @@ textarea::placeholder {
 
 h2.title {
     color: #00FF00;
+    margin-bottom: 15px;
 }
 h5.titles{
     color: white;

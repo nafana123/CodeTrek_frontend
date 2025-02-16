@@ -176,6 +176,7 @@ p.description-text {
     justify-content: space-between;
     font-weight: bold;
     color: #00FF00;
+    height: 30px
 }
 
 .message-user {
@@ -192,7 +193,6 @@ p.description-text {
     color: #bbb;
 }
 
-/* Styling for replies */
 .reply {
     border-left: 2px solid #00FF00;
     margin-left: 20px;
@@ -207,6 +207,7 @@ p.description-text {
     justify-content: space-between;
     font-weight: bold;
     color: #00FF00;
+    height : 30px;
 }
 
 .reply-user {
@@ -230,6 +231,9 @@ p.description-text {
     background-color: #333;
     color: #ddd;
     margin-bottom: 10px;
+}
+.reply-button{
+    margin-top: -14px;
 }
 
 

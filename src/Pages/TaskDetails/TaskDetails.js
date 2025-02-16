@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import axiosInstance from "../../axiosInstance";
 import './TaskDetails.css';
 import Sidebars from "../../Components/Sidebars/Sidebars";
-
+import { Link } from "react-router-dom";
 import php from '../../Img/language/php-programming-language (1).png';
 import javaSvripts from '../../Img/language/js-file.png';
 import python from '../../Img/language/py-file.png';
@@ -37,12 +37,14 @@ const TaskDetails = () => {
     const [sidebarVisible, setSidebarVisible] = useState(true);
     const { id } = useParams();
     const [taskDetails, setTaskDetails] = useState(null);
-    const [activeTab, setActiveTab] = useState('description');
+    const [activeTab, setActiveTab] = useState('description'); // default tab
     const [favorites, setFavorites] = useState(new Set());
     const [discussionMessages, setDiscussionMessages] = useState([]);
     const [newMessage, setNewMessage] = useState("");
     const [replyTo, setReplyTo] = useState(null);
     const [replyMessageId, setReplyMessageId] = useState(null);
+
+    const location = useLocation();
 
     const renderStars = (difficulty) => {
         const stars = [];
@@ -116,16 +118,22 @@ const TaskDetails = () => {
         };
 
         try {
-            await axiosInstance.post(`/add/discussion/${id}`, messageData, {
+            const response = await axiosInstance.post(`/add/discussion/${id}`, messageData, {
                 headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
             });
 
-            setDiscussionMessages((prevMessages) => [
-                ...prevMessages,
-                { user: { login: "Ты" }, message: newMessage, replyTo }
-            ]);
+            const newMessageData = {
+                ...messageData,
+                id: response.data.id,
+                user: { login: "Ты" },
+                createdAt: new Date().toISOString(),
+            };
+
+            setDiscussionMessages((prevMessages) => [...prevMessages, newMessageData]);
+
             setNewMessage("");
             setReplyTo(null);
+
         } catch (err) {
             console.log('Ошибка при отправке сообщения', err);
         }
@@ -138,7 +146,7 @@ const TaskDetails = () => {
         const messageData = { message: newMessage };
 
         try {
-            await axiosInstance.post(`/reply/${discussionId}`, messageData, {
+            const response = await axiosInstance.post(`/reply/${discussionId}`, messageData, {
                 headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
             });
 
@@ -148,8 +156,13 @@ const TaskDetails = () => {
                         return {
                             ...msg,
                             replies: [
-                                ...msg.replies,
-                                { user: { login: "Ты" }, replyToMessage: newMessage, createdAt: new Date().toISOString() }
+                                ...(msg.replies || []),
+                                {
+                                    user: { login: "Ты" },
+                                    replyToMessage: newMessage,
+                                    createdAt: new Date().toISOString(),
+                                    id: response.data.id
+                                }
                             ]
                         };
                     }
@@ -176,7 +189,11 @@ const TaskDetails = () => {
     useEffect(() => {
         taskDetailsData();
         fetchDiscussionMessages();
-    }, [id]);
+
+        if (location.hash === '#discussion') {
+            setActiveTab('discussion');
+        }
+    }, [id, location]);
 
     if (!taskDetails) return <div>Loading...</div>;
 
@@ -193,6 +210,7 @@ const TaskDetails = () => {
                         <div className="language-list-details">
                             {taskDetails?.languages?.length ? (
                                 taskDetails.languages.map((lang, index) => (
+                                    <Link key={index} to={`/task/${taskDetails.task.taskId}/${lang.language}`}>
                                     <div key={index} className="language-item">
                                         <img
                                             src={languageImages[lang.language]?.src}
@@ -202,6 +220,7 @@ const TaskDetails = () => {
                                             onMouseLeave={(e) => (e.target.src = languageImages[lang.language]?.src)}
                                         />
                                     </div>
+                                    </Link>
                                 ))
                             ) : (
                                 <p>No languages available</p>
@@ -300,7 +319,6 @@ const TaskDetails = () => {
                                 </div>
                             ))}
                         </div>
-
                     )}
                 </div>
             </div>

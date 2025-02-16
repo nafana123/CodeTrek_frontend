@@ -124,15 +124,15 @@ const AllTasks = () => {
                                         title={favorites.has(task.id) ? "Удалить из избранного" : "Добавить в избранное"}
                                         onClick={() => handleFavoriteToggle(task.id)}
                                     />
-                                    <Link to={`/details/task/${task.id}`}>
-
-                                    <div className="task-comments">
-                                        <FaComments className="task-icon" title="Обсудить задачу"/>
-                                        <span className="task-comments-count" title="Количество обсуждений">
-                                        ({task.totalMessages})
-                                         </span>
-                                    </div>
+                                    <Link to={`/details/task/${task.id}#discussion`}>
+                                        <div className="task-comments">
+                                            <FaComments className="task-icon" title="Обсудить задачу" />
+                                            <span className="task-comments-count" title="Количество обсуждений">
+                                                ({task.totalMessages})
+                                            </span>
+                                        </div>
                                     </Link>
+
 
 
                                     <FaCheckCircle className="task-icon" title="Количество решений"/>

@@ -86,6 +86,7 @@ const Profile = () => {
                     taskId: item.taskId,
                     difficulty: item.difficulty,
                     messages: [],
+                    replies: item.replies,
                 };
             }
             acc[item.taskId].messages.push(item.message);
@@ -309,6 +310,7 @@ const Profile = () => {
                                     {currentTasks.length > 0 ? (
                                         <div className="tasks-list">
                                             {currentTasks.map((task, index) => (
+                                                <Link to={`/task/solution/${task.id}/${task.language}`}>
                                                 <div key={`${task.id}-${index}`} className="task-card">
                                                     <div className="profil-inf">
                                                         <p>
@@ -319,6 +321,7 @@ const Profile = () => {
                                                     <h5>{task.title}</h5>
                                                     <p><strong>Описание:</strong> {task.description}</p>
                                                 </div>
+                                                </Link>
                                             ))}
                                             <Paginator
                                                 first={currentPage * tasksPerPage}
@@ -385,25 +388,37 @@ const Profile = () => {
 
                             <div className="tab-content">
                                 {activeTab === 3 && (
+
                                     <div>
                                         {discussion.length > 0 ? (
                                             <div className="tasks-list">
                                                 {discussion.map((task, index) => (
-                                                    <div key={task.taskId} className="task-card">
-                                                        <div className="profil-inf">
-                                                            <p>
-                                                                <strong>Сложность:</strong> {renderStars(Number(task.difficulty))}
-                                                            </p>
-                                                        </div>
-                                                        <h5>{task.taskTitle}</h5>
-                                                        <div>
-                                                            {task.messages.map((message, idx) => (
-                                                                <div key={idx} className="comment">
-                                                                    <p dangerouslySetInnerHTML={{__html: message}}></p>
+                                                    <Link key={task.taskId} to={`/details/task/${task.taskId}#discussion`}>
+                                                        <div className="task-card">
+                                                            <div className="profil-inf">
+                                                                <p>
+                                                                    <strong>Сложность:</strong> {renderStars(Number(task.difficulty))}
+                                                                </p>
+                                                            </div>
+                                                            <h5>{task.taskTitle}</h5>
+                                                            <div>
+                                                                <div className="comment">
+                                                                    <p>Ты : {task.messages}</p>
                                                                 </div>
-                                                            ))}
+
+                                                                {task.replies && task.replies.length > 0 && (
+                                                                    <div className="replies">
+                                                                        <h6>Ответы:</h6>
+                                                                        {task.replies.map((reply, idx) => (
+                                                                            <div key={idx} className="reply-profile">
+                                                                                <p className="reply-profile-p" >Ты : {reply.replyMessage}</p>
+                                                                            </div>
+                                                                        ))}
+                                                                    </div>
+                                                                )}
+                                                            </div>
                                                         </div>
-                                                    </div>
+                                                    </Link>
                                                 ))}
                                             </div>
                                         ) : (

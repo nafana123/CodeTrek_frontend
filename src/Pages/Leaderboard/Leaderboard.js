@@ -38,7 +38,7 @@ const Leaderboard = () => {
         <div className="leaderboard-container">
             <Sidebars visible={sidebarVisible} onHide={() => setSidebarVisible(false)} />
             <div className="leaderboard-content">
-                <h1 className="title">Лидеры</h1>
+                <h1 className="title-leader">Лидеры</h1>
 
                 {leaders.length > 0 ? (
                     <div className="podium-container">
