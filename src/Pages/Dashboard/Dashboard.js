@@ -7,7 +7,7 @@ import c from '../../Img/language/c-logo.png';
 import csharp from '../../Img/language/c#.png';
 import python from '../../Img/language/py-file.png';
 import php from '../../Img/language/php-programming-language (1).png';
-import swift from '../../Img/language/swift.png';
+import go from '../../Img/language/go.svg';
 import typeScript from '../../Img/language/typescript.png';
 import javaHover from '../../Img/language/img_2.png';
 import phpHover from '../../Img/language/img_3.png';
@@ -15,7 +15,7 @@ import jsHover from '../../Img/language/img_4.png';
 import pythonHover from '../../Img/language/img_5.png';
 import cHover from '../../Img/language/img_6.png';
 import csharpHover from '../../Img/language/img_7.png';
-import swiftHover from '../../Img/language/img_8.png';
+import goHover from '../../Img/language/goHover.svg';
 import typeScriptHover from '../../Img/language/img_9.png';
 import axiosInstance from '../../axiosInstance';
 import {Button} from "primereact/button";
@@ -36,7 +36,7 @@ const Dashboard = () => {
         { src: c, alt: 'c++', hoverSrc: cHover },
         { src: csharp, alt: 'c#', hoverSrc: csharpHover },
         { src: java, alt: 'java', hoverSrc: javaHover },
-        { src: swift, alt: 'swift', hoverSrc: swiftHover },
+        { src: go, alt: 'go', hoverSrc: goHover },
         { src: typeScript, alt: 'typeScript', hoverSrc: typeScriptHover }
     ];
 

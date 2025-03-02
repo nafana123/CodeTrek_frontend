@@ -11,6 +11,7 @@ import CodeMirror from "@uiw/react-codemirror";
 import {dracula} from "@uiw/codemirror-theme-dracula";
 import {javascript} from "@codemirror/lang-javascript";
 import {Button} from "primereact/button";
+import { php } from '@codemirror/lang-php';
 
 const TaskSolution = () => {
     const { id, language } = useParams();
@@ -82,7 +83,7 @@ const TaskSolution = () => {
                                 <CodeMirror
                                     value={userCode}
                                     theme={dracula}
-                                    extensions={[javascript({jsx: true})]}
+                                    extensions={[language === 'php' ? php() : javascript({ jsx: true })]}
                                     editable={false}
                                 />
                                 </pre>
@@ -123,7 +124,7 @@ const TaskSolution = () => {
                                      <CodeMirror
                                          value={task.code}
                                          theme={dracula}
-                                         extensions={[javascript({jsx: true})]}
+                                         extensions={[language === 'php' ? php() : javascript({ jsx: true })]}
                                          editable={false}
                                      />
                                 </pre>

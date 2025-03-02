@@ -3,34 +3,8 @@ import Sidebars from "../../Components/Sidebars/Sidebars";
 import axiosInstance from '../../axiosInstance';
 import './AllTasks.css';
 import { Link } from "react-router-dom";
-import php from '../../Img/language/php-programming-language (1).png';
-import javaSvripts from '../../Img/language/js-file.png';
-import python from '../../Img/language/py-file.png';
-import c from '../../Img/language/c-logo.png';
-import csharp from '../../Img/language/c#.png';
-import java from '../../Img/language/java.png';
-import swift from '../../Img/language/swift.png';
-import typeScript from '../../Img/language/typescript.png';
-import phpHover from '../../Img/language/img_3.png';
-import jsHover from '../../Img/language/img_4.png';
-import pythonHover from '../../Img/language/img_5.png';
-import cHover from '../../Img/language/img_6.png';
-import csharpHover from '../../Img/language/img_7.png';
-import swiftHover from '../../Img/language/img_8.png';
-import typeScriptHover from '../../Img/language/img_9.png';
-import javaHover from "../../Img/language/img_2.png";
 import { FaHeart, FaComments, FaCheckCircle } from 'react-icons/fa';
-
-const languageImages = {
-    php: { src: php, hoverSrc: phpHover },
-    javaScript: { src: javaSvripts, hoverSrc: jsHover },
-    python: { src: python, hoverSrc: pythonHover },
-    c: { src: c, hoverSrc: cHover },
-    csharp: { src: csharp, hoverSrc: csharpHover },
-    java: { src: java, hoverSrc: javaHover },
-    swift: { src: swift, hoverSrc: swiftHover },
-    typeScript: { src: typeScript, hoverSrc: typeScriptHover }
-};
+import languageImages from "../../Components/Languages/languageImages";
 
 const AllTasks = () => {
     const [sidebarVisible, setSidebarVisible] = useState(true);
@@ -46,6 +20,7 @@ const AllTasks = () => {
                     'Content-Type': 'application/json',
                 }
             });
+            console.log(response.data)
             setTasks(response.data);
             const initialFavorites = new Set(response.data.filter(task => task.isFavorite).map(task => task.id));
             setFavorites(initialFavorites);

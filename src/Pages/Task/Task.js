@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
 import Sidebars from "../../Components/Sidebars/Sidebars";
-import {useNavigate, useParams} from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axiosInstance from '../../axiosInstance';
 import CodeMirror from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
+import { php } from '@codemirror/lang-php';
 import { dracula } from '@uiw/codemirror-theme-dracula';
 import { Button } from "primereact/button";
 import { Toast } from 'primereact/toast';
 import { useRef } from 'react';
-
-
 import './Task.css';
 
 const Task = () => {
@@ -22,6 +21,18 @@ const Task = () => {
     const toast = useRef(null);
     const navigate = useNavigate();
 
+    useEffect(() => {
+        if (language === 'php' && !code.startsWith('<?php')) {
+            setCode('<?php\n' + code);
+        }
+    }, [language, code]);
+
+    useEffect(() => {
+        if(language === 'c++' && !code.startsWith('#include <iostream>\n') && id == 3){
+            setCode('#include <iostream>\n' + code);
+
+        }
+    }, [language, code, id]);
 
     const task = async () => {
         try {
@@ -30,7 +41,9 @@ const Task = () => {
         } catch (err) {
             console.log('Задача не найдена');
         }
-    }
+    };
+
+    const formatLanguage = (lang) => (lang === "c" ? "c#" : lang);
 
     const checkSolutionLocally = async () => {
         if (!code.trim()) {
@@ -44,7 +57,7 @@ const Task = () => {
         setConsoleError('');
 
         try {
-            const response = await axiosInstance.post(`/execute/task/${id}`, { code });
+            const response = await axiosInstance.post(`/execute/task/${id}/${language}`, { code });
 
             if (response.data.success) {
                 setConsoleOutput(response.data.output);
@@ -60,7 +73,7 @@ const Task = () => {
             setConsoleOutput('');
             document.querySelector('.console-output').style.color = "red";
         }
-    }
+    };
 
     const submitSolution = async () => {
             try {
@@ -122,7 +135,7 @@ const Task = () => {
                         </div>
                         <div className="language-container">
                             <span className="language-label"><strong>Язык:</strong></span>
-                            <span className="language-name">{taskData.language}</span>
+                            <span className="language-name">{formatLanguage(taskData.language)}</span>
                         </div>
                     </div>
 
@@ -144,7 +157,7 @@ const Task = () => {
                         value={code}
                         height="630px"
                         theme={dracula}
-                        extensions={[javascript({jsx: true})]}
+                        extensions={[language === 'php' ? php() : javascript({ jsx: true })]}
                         onChange={(value, viewUpdate) => {
                             setCode(value);
                         }}
@@ -152,12 +165,12 @@ const Task = () => {
                     <div className="buttons-container">
                         <Button
                             label="Проверить"
-                            className="pButton pButtonSecondaryss"
+                            className="pButton pButtonSecondaryssTasks"
                             onClick={checkSolutionLocally}
                         />
                         <Button
                             label="Отправить решение"
-                            className="pButton pButtonSecondarysss"
+                            className="pButton pButtonSecondarysssTasks"
                             onClick={submitSolution}
                         />
                     </div>
@@ -165,6 +178,6 @@ const Task = () => {
             </div>
         </div>
     );
-}
+};
 
 export default Task;
