@@ -9,32 +9,36 @@ import Task from "./Pages/Task/Task";
 import TaskSolution from "./Pages/TaskSolution/TaskSolution";
 import Profile from "./Pages/Profile/Profile";
 import Leaderboard from "./Pages/Leaderboard/Leaderboard";
-import TaskDetails from "./Pages/TaskDetails/TaskDetails"
+import TaskDetails from "./Pages/TaskDetails/TaskDetails";
+import AdminPanel from "./Pages/AdminPanel/AdminPanel";
 
 const AppRoutes = ({ user, setUser }) => {
-    const isAuthenticated = () => {
-        return !!localStorage.getItem('token');
-    };
+    const isAuthenticated = () => !!localStorage.getItem('token');
+    const isAdmin = () => user && user.roles && user.roles.includes('ROLE_ADMIN');
 
     return (
         <Routes>
             {!isAuthenticated() ? (
                 <>
                     <Route path="/" element={<MainPage />} />
-                    <Route path="/register" element={<RegisterPage  setUser={setUser}/>} />
+                    <Route path="/register" element={<RegisterPage setUser={setUser} />} />
                     <Route path="/login" element={<LoginPage setUser={setUser} />} />
                     <Route path="*" element={<Navigate to="/" />} />
                 </>
+            ) : isAdmin() ? (
+                <>
+                    <Route path="/admin" element={<AdminPanel />} />
+                    <Route path="*" element={<Navigate to="/admin" />} />
+                </>
             ) : (
                 <>
-                    <Route path="/dashboard" element={<Dashboard  user={user}  />} />
+                    <Route path="/dashboard" element={<Dashboard user={user} />} />
                     <Route path="/task/:id/:language" element={<Task />} />
                     <Route path="/task/solution/:id/:language" element={<TaskSolution />} />
-                    <Route path="/all/tasks" element={<AllTasks  user={user}  />} />
+                    <Route path="/all/tasks" element={<AllTasks user={user} />} />
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/leaderboard" element={<Leaderboard />} />
                     <Route path="/details/task/:id" element={<TaskDetails />} />
-
                     <Route path="*" element={<Navigate to="/dashboard" />} />
                 </>
             )}

@@ -236,7 +236,33 @@ p.description-text {
     margin-top: -14px;
 }
 
+.solution-language-item {
+    cursor: pointer;
+    border-radius: 8px;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
 
+.solution-language-item img {
+    width: 80%;
+    object-fit: contain;
+    border-radius: 2px;
+}
+.solution-languages{
+    display: flex;
+    justify-content: center;
+}
+.details-solved{
+    display: flex;
+    justify-content: space-between;
+}
+.retry-button {
+    transition: all 0.2s ease-in-out;
+
+}
+.retry-button:hover {
+    color: #00FF00;
+    transform: scale(1.1);
+}
 
 
 

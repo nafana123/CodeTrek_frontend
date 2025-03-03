@@ -9,7 +9,18 @@ import Footer from "./Components/Footer/Footer";
 import { jwtDecode } from 'jwt-decode';
 
 function App() {
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState(() => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            try {
+                return jwtDecode(token);
+            } catch (error) {
+                console.error('Недействительный токен:', error);
+                return null;
+            }
+        }
+        return null;
+    });
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -22,12 +33,12 @@ function App() {
             }
         }
     }, []);
-    
+
     return (
         <div className="App">
             <Router>
                 <Header user={user} setUser={setUser} />
-                <AppRoutes setUser={setUser} />
+                <AppRoutes user={user} setUser={setUser} />
                 <Footer />
             </Router>
         </div>

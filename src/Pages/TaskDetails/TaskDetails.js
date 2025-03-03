@@ -6,6 +6,11 @@ import Sidebars from "../../Components/Sidebars/Sidebars";
 import { Link } from "react-router-dom";
 import { FaHeart, FaReply } from "react-icons/fa";
 import languageImages from "../../Components/Languages/languageImages";
+import CodeMirror from "@uiw/react-codemirror";
+import { php } from '@codemirror/lang-php';
+import {javascript} from "@codemirror/lang-javascript";
+import {dracula} from "@uiw/codemirror-theme-dracula";
+import {Button} from "primereact/button";
 
 
 
@@ -19,8 +24,9 @@ const TaskDetails = () => {
     const [newMessage, setNewMessage] = useState("");
     const [replyTo, setReplyTo] = useState(null);
     const [replyMessageId, setReplyMessageId] = useState(null);
-
+    const [userSolutions, setUserSolutions] = useState([]);
     const location = useLocation();
+    const [selectedLanguage, setSelectedLanguage] = useState(null);
 
     const renderStars = (difficulty) => {
         const stars = [];
@@ -162,9 +168,32 @@ const TaskDetails = () => {
         return totalMessages;
     };
 
+
+
+    const fetchUserSolutions = async () => {
+        const token = localStorage.getItem('token');
+        try {
+            const response = await axiosInstance.get(`/user/solution/${id}`, {
+                headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
+            });
+            setUserSolutions(response.data);
+        } catch (err) {
+            console.log('Ошибка при загрузке решений', err);
+        }
+    };
+
+    const handleLanguageClick = (language) => {
+        const selectedSolution = userSolutions.find((solution) => solution.language === language);
+        setSelectedLanguage(selectedSolution || null);
+    };
+
+
+
+
     useEffect(() => {
         taskDetailsData();
         fetchDiscussionMessages();
+        fetchUserSolutions();
 
         if (location.hash === '#discussion') {
             setActiveTab('discussion');
@@ -228,10 +257,17 @@ const TaskDetails = () => {
                     >
                         Обсуждение ({getTotalMessagesCount()})
                     </span>
+                    <span
+                        onClick={() => setActiveTab('solution')}
+                        className={activeTab === 'solution' ? 'active' : ''}
+                    >
+                        Ваши решения ({userSolutions.length})
+                    </span>
+
                 </div>
 
                 <div className="contentes">
-                    {activeTab === 'description' ? (
+                    {activeTab === 'description' && (
                         <div className="description">
                             <p className="description-text">{taskDetails.task.description}</p>
                             <h4>Входные данные:</h4>
@@ -239,7 +275,8 @@ const TaskDetails = () => {
                             <h4>Выходные данные:</h4>
                             <p className="output-text">{taskDetails.task.output}</p>
                         </div>
-                    ) : (
+                    )}
+                    {activeTab === 'discussion' && (
                         <div className="discussion">
                             <div className="new-message">
                                 <textarea
@@ -294,6 +331,55 @@ const TaskDetails = () => {
                                     )}
                                 </div>
                             ))}
+                        </div>
+                    )}
+
+                    {activeTab === 'solution' && (
+                        <div className="solution-tab">
+                            {userSolutions.length > 0 ? (
+                                <>
+                                    <div className="solution-languages">
+                                        {userSolutions.map((solution, index) => (
+                                            <div
+                                                key={index}
+                                                className={`solution-language-item ${selectedLanguage === solution.language ? 'active' : ''}`}
+                                                onClick={() => handleLanguageClick(solution.language)}
+                                            >
+                                                <img
+                                                    src={languageImages[solution.language]?.src}
+                                                    alt={solution.language}
+                                                    onMouseEnter={(e) => (e.target.src = languageImages[solution.language]?.hoverSrc)}
+                                                    onMouseLeave={(e) => (e.target.src = languageImages[solution.language]?.src)}
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>
+                                    {selectedLanguage && (
+                                        <div className="solution-code">
+                                            <div className="details-solved">
+                                                <h4>Решение на {selectedLanguage.language}</h4>
+                                                <Link
+                                                    to={`/task/${taskDetails.task.taskId}/${selectedLanguage.language}`}
+                                                    className="retry-button">
+                                                    Перерешать
+                                                </Link>
+                                            </div>
+                                            <CodeMirror
+                                                value={selectedLanguage.code}
+                                                theme={dracula}
+                                                extensions={[
+                                                    selectedLanguage.language === 'php' ? php() : javascript({jsx: true})
+                                                ]}
+                                                editable={false}
+                                            />
+                                        </div>
+                                    )}
+
+                                </>
+                            ) : (
+                                <p>У вас пока нет решений</p>
+                            )}
+
                         </div>
                     )}
                 </div>

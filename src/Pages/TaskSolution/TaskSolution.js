@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import {Link, useNavigate, useParams} from "react-router-dom";
 import Sidebars from "../../Components/Sidebars/Sidebars";
 import axiosInstance from '../../axiosInstance';
 import { Paginator } from 'primereact/paginator';
@@ -32,7 +32,6 @@ const TaskSolution = () => {
                     'Content-Type': 'application/json',
                 }
             });
-            console.log(response.data.userSolvedTask)
             setUserSolvedTask(response.data.userSolvedTask);
             setSolvedTasksList(response.data.solvedTasksList);
             setUserCode(response.data.userCode);
@@ -69,7 +68,6 @@ const TaskSolution = () => {
                         <div className="task-infos">
                             <h2>{userSolvedTask.title || 'Задача не найдена'}</h2>
                             <p>{userSolvedTask.description || 'Описание недоступно'}</p>
-
                             <div className="examples">
                                 <h3>Пример:</h3>
                                 <div className="task-examples">
