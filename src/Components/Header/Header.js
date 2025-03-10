@@ -5,10 +5,16 @@ import './Header.css';
 import { Link } from 'react-router-dom';
 
 const Header = ({ user, setUser }) => {
+    const isAdmin = () => user?.roles?.includes('ROLE_ADMIN');
+
     return (
         <header className="header">
             {user ? (
-                <a href="#new">Фича</a>
+                isAdmin() ? (
+                    <Link to="/admin">Админ панель</Link>
+                ) : (
+                    <a href="#new">Фича</a>
+                )
             ) : (
                 <nav className="navLinks">
                     <Link to="/">Главная</Link>
@@ -19,14 +25,11 @@ const Header = ({ user, setUser }) => {
             <div className="authButtons">
                 {user ? (
                     <>
-                        <Link to="/profile">
-                            <Button
-                                label='Профиль'
-                                icon='pi pi-user'
-                                className="pButton pButtonPrimary"
-                            />
-                        </Link>
-
+                        {!isAdmin() && (
+                            <Link to="/profile">
+                                <Button label='Профиль' icon='pi pi-user' className="pButton pButtonPrimary" />
+                            </Link>
+                        )}
                         <Button
                             label="Выйти"
                             icon='pi pi-sign-out'

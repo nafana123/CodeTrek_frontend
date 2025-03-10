@@ -1,85 +1,118 @@
-import React from 'react';
-import { AppBar, Toolbar, Typography, Drawer, List, ListItem, ListItemIcon, ListItemText, CssBaseline, Box } from '@mui/material';
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import PeopleIcon from '@mui/icons-material/People';
-import AssignmentIcon from '@mui/icons-material/Assignment';
-import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as BarTooltip, Legend as BarLegend } from 'recharts';
-
-const drawerWidth = 240;
-
-const dataPie = [
-    { name: 'Задачи выполнены', value: 400 },
-    { name: 'Задачи в процессе', value: 300 },
-    { name: 'Задачи не начаты', value: 300 }
-];
-
-const dataBar = [
-    { name: 'Пн', uv: 4000, pv: 2400 },
-    { name: 'Вт', uv: 3000, pv: 1398 },
-    { name: 'Ср', uv: 2000, pv: 9800 },
-    { name: 'Чт', uv: 2780, pv: 3908 },
-    { name: 'Пт', uv: 1890, pv: 4800 }
-];
+import React, { useEffect, useState } from 'react';
+import { CssBaseline, Box, Card, CardContent, Typography, Button } from '@mui/material';
+import axiosInstance from "../../axiosInstance";
+import './AdminPanel.css';
+import {
+    ResponsiveContainer,
+    BarChart,
+    CartesianGrid,
+    XAxis,
+    YAxis,
+    Tooltip,
+    Legend,
+    Bar,
+    AreaChart,
+    Area
+} from 'recharts';
 
 const AdminPanel = () => {
+    const [data, setData] = useState([]);
+    const [userStats, setUserStats] = useState([]);
+    const [users, setUsers] = useState([]);
+    const [selectedDate, setSelectedDate] = useState(null);
+    const [showAllUsers, setShowAllUsers] = useState(false);
+
+    const groupByDate = (users) => {
+        const grouped = users.reduce((acc, user) => {
+            const date = user.data;
+            if (!acc[date]) acc[date] = 0;
+            acc[date]++;
+            return acc;
+        }, {});
+        return Object.keys(grouped).map(date => ({
+            name: date,
+            users: grouped[date]
+        }));
+    };
+
+    useEffect(() => {
+        const fetchUserStatistics = async () => {
+            try {
+                const response = await axiosInstance.get('/admin/user/all');
+                setUsers(response.data);
+                setUserStats(groupByDate(response.data));
+            } catch (error) {
+                console.error("Ошибка при загрузке пользователей:", error);
+            }
+        };
+        fetchUserStatistics();
+    }, []);
+
+    useEffect(() => {
+        const fetchStatistics = async () => {
+            try {
+                const response = await axiosInstance.get('/admin/task/statistics');
+                setData(Object.keys(response.data).map(key => ({
+                    name: key,
+                    tasks: response.data[key]
+                })));
+            } catch (error) {
+                console.error("Ошибка при загрузке статистики задач:", error);
+            }
+        };
+        fetchStatistics();
+    }, []);
+
+    const filteredUsers = selectedDate ? users.filter(user => user.data === selectedDate) : users;
+
     return (
-        <Box sx={{ display: 'flex' }}>
+        <Box className="main-section" sx={{ display: 'flex' }}>
             <CssBaseline />
-            <AppBar position="fixed" sx={{ width: `calc(100% - ${drawerWidth}px)`, ml: `${drawerWidth}px` }}>
-                <Toolbar>
-                    <Typography variant="h6" noWrap>
-                        Админ-панель
-                    </Typography>
-                </Toolbar>
-            </AppBar>
+            <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 3 }}>
+                <Typography variant="h6">Статистика решенных задач по языкам</Typography>
+                <ResponsiveContainer width="97%" height={300}>
+                    <BarChart data={data}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend />
+                        <Bar dataKey="tasks" fill="#8884d8" />
+                    </BarChart>
+                </ResponsiveContainer>
 
-            <Drawer variant="permanent" sx={{ width: drawerWidth, flexShrink: 0, '& .MuiDrawer-paper': { width: drawerWidth, boxSizing: 'border-box' } }}>
-                <Toolbar />
-                <List>
-                    <ListItem button>
-                        <ListItemIcon><DashboardIcon /></ListItemIcon>
-                        <ListItemText primary="Главная" />
-                    </ListItem>
-                    <ListItem button>
-                        <ListItemIcon><PeopleIcon /></ListItemIcon>
-                        <ListItemText primary="Пользователи" />
-                    </ListItem>
-                    <ListItem button>
-                        <ListItemIcon><AssignmentIcon /></ListItemIcon>
-                        <ListItemText primary="Задачи" />
-                    </ListItem>
-                </List>
-            </Drawer>
 
-            <Box component="main" sx={{ flexGrow: 1, p: 3, mt: 8 }}>
-                <Typography variant="h4">Добро пожаловать, Админ!</Typography>
-                <Typography>Здесь ты можешь управлять пользователями, задачами и статистикой.</Typography>
+                <Typography variant="h6" sx={{ mt: 3 }}>Статистика регистрации пользователей</Typography>
+                <Button onClick={() => { setShowAllUsers(!showAllUsers); setSelectedDate(null); }} sx={{ fontSize: '1rem', fontWeight: 'bold' }}>
+                    Общее количество пользователей: {users.length}
+                </Button>
+                <ResponsiveContainer width="97%" height={300}>
+                    <AreaChart data={userStats} onClick={(e) => { if (e?.activeLabel) { setSelectedDate(e.activeLabel); setShowAllUsers(false); } }}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="name" />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend />
+                        <Area type="monotone" dataKey="users" stroke="#82ca9d" fill="#82ca9d" />
+                    </AreaChart>
+                </ResponsiveContainer>
 
-                <Box sx={{ mt: 4, display: 'flex', justifyContent: 'space-around' }}>
-                    <ResponsiveContainer width="45%" height={300}>
-                        <PieChart>
-                            <Pie data={dataPie} dataKey="value" nameKey="name" outerRadius={120} label>
-                                <Cell fill="#82ca9d" />
-                                <Cell fill="#8884d8" />
-                                <Cell fill="#ff7300" />
-                            </Pie>
-                            <Tooltip />
-                            <Legend />
-                        </PieChart>
-                    </ResponsiveContainer>
-
-                    <ResponsiveContainer width="45%" height={300}>
-                        <BarChart data={dataBar}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="name" />
-                            <YAxis />
-                            <BarLegend />
-                            <Bar dataKey="uv" fill="#8884d8" />
-                            <Bar dataKey="pv" fill="#82ca9d" />
-                            <BarTooltip />
-                        </BarChart>
-                    </ResponsiveContainer>
-                </Box>
+                {(selectedDate || showAllUsers) && (
+                    <Box sx={{ mt: 3 }}>
+                        <Typography variant="h6">{selectedDate ? `Пользователи, зарегистрированные ${selectedDate}` : "Все пользователи"}</Typography>
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mt: 2, ml: 8 }}>
+                            {filteredUsers.length > 0 ? filteredUsers.map(user => (
+                                <Card key={user.id} sx={{ minWidth: 250, p: 2, background: '#f5f5f5' }}>
+                                    <CardContent>
+                                        <Typography variant="h6">{user.login}</Typography>
+                                        <Typography>Email: {user.email}</Typography>
+                                        <Typography>Дата регистрации: {user.data}</Typography>
+                                    </CardContent>
+                                </Card>
+                            )) : <Typography>Нет пользователей для отображения.</Typography>}
+                        </Box>
+                    </Box>
+                )}
             </Box>
         </Box>
     );
