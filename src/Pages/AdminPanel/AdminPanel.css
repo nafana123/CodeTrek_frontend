@@ -2,3 +2,16 @@
 main.MuiBox-root.css-kh0550{
     background-color: #1E1E1E;
 }
+.MuiBox-root.css-8o1ae3{
+    display:flex;
+    justify-content: center;
+}
+.adminInput{
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%;
+    max-width: 400px;
+    font-size: 16px;
+    outline: none;
+}

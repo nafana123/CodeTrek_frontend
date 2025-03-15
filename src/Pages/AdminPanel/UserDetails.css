@@ -1,0 +1,57 @@
+.user-details-container {
+    padding: 3rem;
+    background: #0D0D0D;
+    color: #E0E0E0;
+}
+
+.section-title {
+    font-size: 32px;
+    margin-bottom: 20px;
+    background: linear-gradient(90deg, #3DFF00, #2A7A00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.user-card {
+    background: #1E1E1E !important;
+    padding: 20px;
+    margin-bottom: 20px;
+    color: #E0E0E0;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.task-card {
+    background: #1E1E1E !important;
+    padding: 20px;
+    margin-bottom: 15px;
+    color: #E0E0E0;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.code-block {
+    background: #121212;
+    padding: 10px;
+    border-radius: 5px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 16px;
+    color: #00FF00;
+    overflow-x: auto;
+}
+
+.loading-text {
+    font-size: 24px;
+    text-align: center;
+    color: #3DFF00;
+}
+
+.no-data {
+    font-size: 24px;
+    text-align: center;
+    color: #C5C6C7;
+}
+.MuiBox-root.css-ughypi{
+    background: #1E1E1E;
+    color: white;
+}

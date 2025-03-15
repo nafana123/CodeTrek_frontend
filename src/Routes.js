@@ -11,6 +11,7 @@ import Profile from "./Pages/Profile/Profile";
 import Leaderboard from "./Pages/Leaderboard/Leaderboard";
 import TaskDetails from "./Pages/TaskDetails/TaskDetails";
 import AdminPanel from "./Pages/AdminPanel/AdminPanel";
+import UserDetails from "./Pages/AdminPanel/UserDetails";
 
 const AppRoutes = ({ user, setUser }) => {
     const isAuthenticated = () => !!localStorage.getItem('token');
@@ -28,6 +29,7 @@ const AppRoutes = ({ user, setUser }) => {
             ) : isAdmin() ? (
                 <>
                     <Route path="/admin" element={<AdminPanel />} />
+                    <Route path="/admin/user/:id" element={<UserDetails />} />
                     <Route path="*" element={<Navigate to="/admin" />} />
                 </>
             ) : (
