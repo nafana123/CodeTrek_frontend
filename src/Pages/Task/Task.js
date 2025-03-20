@@ -21,23 +21,11 @@ const Task = () => {
     const toast = useRef(null);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        if (language === 'php' && !code.startsWith('<?php')) {
-            setCode('<?php\n' + code);
-        }
-    }, [language, code]);
-
-    useEffect(() => {
-        if(language === 'c++' && !code.startsWith('#include <iostream>\n') && id == 3){
-            setCode('#include <iostream>\n' + code);
-
-        }
-    }, [language, code, id]);
-
     const task = async () => {
         try {
             const response = await axiosInstance.get(`/task/${id}/${language}`);
             setTaskData(response.data);
+            setCode(response.data.codeTemplates)
         } catch (err) {
             console.log('Задача не найдена');
         }
@@ -65,7 +53,7 @@ const Task = () => {
                 document.querySelector('.console-output').style.color = "lightgreen";
             } else {
                 setConsoleOutput('');
-                setConsoleError(response.data.error);
+                setConsoleError(response.data.error || 'Неизвестная ошибка');
                 document.querySelector('.console-output').style.color = "red";
             }
         } catch (err) {
@@ -76,35 +64,42 @@ const Task = () => {
     };
 
     const submitSolution = async () => {
-            try {
-                const token = localStorage.getItem('token');
+        try {
+            const token = localStorage.getItem('token');
+            const response = await axiosInstance.post(`/submit/task/${id}/${language}`, {
+                code
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                }
+            });
 
-                    const response = await axiosInstance.post(`/submit/task/${id}/${language}`,
-                        {
-                            code
-                        },
-                        {
-                            headers: {
-                                Authorization: `Bearer ${token}`,
-                                'Content-Type': 'application/json',
-                            }
-                        }
-                    );
-                    if (response.data.success) {
-                        navigate(`/task/solution/${id}/${language}`);
-                    }
-                    else{
-                        toast.current.show({
-                            severity: 'error',
-                            summary: 'Ошибка в решение',
-                            detail: ' Пожалуйста проверьте ваше решение, и отправьте его снова.',
-                            life: 3500
-                        });
-                    }
-            } catch (err) {
-
+            if (response.data.success) {
+                navigate(`/task/solution/${id}/${language}`);
+            } else {
+                toast.current.show({
+                    severity: 'error',
+                    summary: 'Ошибка в решении',
+                    detail: response.data.error || 'Пожалуйста, проверьте ваше решение, и отправьте его снова.',
+                    life: 3500
+                });
             }
+        } catch (err) {
+            setConsoleError('Ошибка при отправке решения');
+            setConsoleOutput('');
+            document.querySelector('.console-output').style.color = "red";
+
+            toast.current.show({
+                severity: 'error',
+                summary: 'Ошибка при отправке решения',
+                detail: 'Пожалуйста, попробуйте снова.',
+                life: 3500
+            });
+        }
     };
+
+
 
     useEffect(() => {
         task();

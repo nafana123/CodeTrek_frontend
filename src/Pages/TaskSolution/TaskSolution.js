@@ -40,6 +40,9 @@ const TaskSolution = () => {
         }
     }
 
+    const formatLanguage = (lang) => (lang === "c" ? "c#" : lang);
+
+
     useEffect(() => {
         taskOutput();
     }, [id]);
@@ -95,7 +98,7 @@ const TaskSolution = () => {
                         <div className="task-detailss">
                             <p><strong>Уровень
                                 сложности:</strong> {renderStars(userSolvedTask.difficulty.level || 0)}</p>
-                            <p><strong>Язык:</strong> {language || 'Не указан'}</p>
+                            <p><strong>Язык:</strong> {formatLanguage(language) || 'Не указан'}</p>
                         </div>
                     </div>
 
