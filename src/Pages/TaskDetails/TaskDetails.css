@@ -173,21 +173,47 @@ p.description-text {
 
 .message-header {
     display: flex;
+    align-items: center;
     justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+}
+
+.message-avatar {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+.message-avatar.initials {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background-color: #d8e0ea;
+    color: #2c3e50;
     font-weight: bold;
-    color: #00FF00;
-    height: 30px
+    font-size: 18px;
+    border-radius: 50%;
+}
+
+.message-user-container {
+    flex-grow: 1;
 }
 
 .message-user {
-    color: #00FF00;
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0;
 }
 
 .message-date {
-    font-size: 0.9em;
-    color: #bbb;
+    font-size: 12px;
+    color: #777;
+    margin-left: auto;
 }
-
 .message p {
     margin-top: 5px;
     color: #bbb;
@@ -204,19 +230,23 @@ p.description-text {
 
 .reply-header {
     display: flex;
+    align-items: center;
     justify-content: space-between;
-    font-weight: bold;
-    color: #00FF00;
-    height : 30px;
+    gap: 10px;
+    width: 100%;
 }
 
 .reply-user {
     color: #00FF00;
+    font-size: 14px;
+    font-weight: 600;
+    margin: 0;
 }
 
 .reply-date {
-    font-size: 0.9em;
-    color: #bbb;
+    font-size: 12px;
+    color: #777;
+    margin-left: auto;
 }
 
 .reply p {
@@ -262,6 +292,22 @@ p.description-text {
 .retry-button:hover {
     color: #00FF00;
     transform: scale(1.1);
+}
+.message-avatar,
+.reply-avatar {
+    width: 32px;
+    height: 32px;
+    object-fit: cover;
+    margin-right: 8px;
+}
+
+.initials {
+    background-color: #3498db;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
 }
 
 

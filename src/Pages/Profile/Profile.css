@@ -57,6 +57,13 @@
     font-size: 50px;
     text-transform: uppercase;
 }
+img.avatar-img{
+    width: 100px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
 .right-container {
     flex: 2.5;

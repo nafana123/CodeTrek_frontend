@@ -9,6 +9,7 @@ import { Button } from "primereact/button";
 import { Toast } from 'primereact/toast';
 import "./Profile.css";
 import { Link } from "react-router-dom";
+import { FaTimes } from 'react-icons/fa'; // You can also use other icons or libraries if preferred
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -25,6 +26,8 @@ const Profile = () => {
     const toast = useRef(null);
     const [favoriteTasks, setFavoriteTasks] = useState([]);
     const [discussion, setDiscussion] = useState([]);
+    const avatarInputRef = useRef(null);
+    const [avatarFile, setAvatarFile] = useState([]);
 
     const items = [
         { label: "Решённые задачи", icon: "pi pi-fw pi-check" },
@@ -201,6 +204,79 @@ const Profile = () => {
     const indexOfFirstTask = currentPage * tasksPerPage;
     const currentTasks = solvedTasks.slice(indexOfFirstTask, indexOfFirstTask + tasksPerPage);
 
+    const handleAvatarChange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        setAvatarFile(file);
+        uploadAvatar(file);
+        e.target.value = null;
+
+    };
+
+    const uploadAvatar = async (file) => {
+        const token = localStorage.getItem("token");
+        const formData = new FormData();
+        formData.append("avatar", file);
+
+        try {
+            const response = await axiosInstance.post("/user/avatar", formData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
+            const newAvatar = response.data.avatar;
+            setUser((prevUser) => ({
+                ...prevUser,
+                avatar: newAvatar
+            }));
+
+            toast.current.show({
+                severity: 'success',
+                summary: 'Аватар успешно обновлён',
+                life: 3500
+            });
+        } catch (error) {
+            console.error("Ошибка при загрузке аватара:", error);
+            alert("Произошла ошибка при загрузке аватара.");
+        }
+    };
+
+    const getAvatarUrl = (avatarPath) => {
+        const BASE_URL = 'http://localhost:8000';
+
+        if (avatarPath && avatarPath.startsWith('/uploads')) {
+            return `${BASE_URL}${avatarPath}`;
+        }
+        return avatarPath;
+    };
+
+    const deleteAvatar = async () => {
+        const token = localStorage.getItem("token");
+
+        try {
+            const response = await axiosInstance.post("/delete/user/avatar", {}, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
+            });
+
+            console.log(response);
+
+            toast.current.show({
+                severity: 'success',
+                summary: 'Аватар успешно удалён',
+                life: 3500
+            });
+
+            setUser(prev => ({ ...prev, avatar: null }));
+        } catch (error) {
+            console.error("Ошибка при удалении аватара:", error);
+        }
+    };
+
+
     return (
         <div className="profile-page">
             <Sidebars visible={sidebarVisible} onHide={() => setSidebarVisible(false)} />
@@ -211,8 +287,27 @@ const Profile = () => {
                             <p><strong>Дата регистрации:</strong> {user.registrationDate}</p>
                             <div className="profile-card">
                                 <div className="profile-avatar">
-                                    {getInitials(user.login || '')}
+                                    {user.avatar ? (
+                                        <>
+                                            <img
+                                                src={getAvatarUrl(user.avatar)}
+                                                alt="Аватар"
+                                                className="avatar-img"
+                                            />
+                                            <Button
+                                                icon="pi pi-times"
+                                                className="remove-avatar-btn p-button-rounded p-button-danger"
+                                                aria-label="Удалить аватар"
+                                                style={{position: 'absolute', top: '160px', left: '410px', width: '20px', height: '20px', color: 'red', background: 'transparent', border: 'none',}}
+                                                onClick={deleteAvatar}
+                                            />
+
+                                        </>
+                                    ) : (
+                                        getInitials(user.login || '')
+                                    )}
                                 </div>
+
                                 <div className="profile-info">
                                     <h3>{user.login}</h3>
                                     <p>{user.email}</p>
@@ -355,6 +450,17 @@ const Profile = () => {
                                             onChange={(e) => setEditEmail(e.target.value)}
                                         />
                                     </div>
+
+                                    <div className="input-group">
+                                        <label htmlFor="avatar">Аватар</label>
+                                        <input
+                                            type="file"
+                                            id="avatar"
+                                            accept="image/*"
+                                            onChange={handleAvatarChange}
+                                        />
+                                    </div>
+
                                     <Button
                                         label="Сохранить"
                                         className="pButton pButtonSecondarysProfile"

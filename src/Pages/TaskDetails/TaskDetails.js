@@ -202,6 +202,15 @@ const TaskDetails = () => {
 
     if (!taskDetails) return <div>Loading...</div>;
 
+    const getAvatarUrl = (avatarPath) => {
+        const BASE_URL = 'http://localhost:8000';
+
+        if (avatarPath && avatarPath.startsWith('/uploads')) {
+            return `${BASE_URL}${avatarPath}`;
+        }
+        return avatarPath;
+    };
+
     return (
         <div className="task-details-data">
             <Sidebars visible={sidebarVisible} onHide={() => setSidebarVisible(false)} />
@@ -289,25 +298,56 @@ const TaskDetails = () => {
                             {discussionMessages.map((message) => (
                                 <div key={message.id} className="message">
                                     <div className="message-header">
-                                        <p className="message-user">
-                                            {message.isCurrentUser ? "Ты" : message.user.login}
+                                        {message.user.avatar ? (
+                                            <img
+                                                src={getAvatarUrl(message.user.avatar)}
+                                                alt="аватар"
+                                                className="message-avatar"
+                                            />
+                                        ) : (
+                                            <div className="message-avatar initials">
+                                                {message.user.login[0].toUpperCase()}
+                                            </div>
+                                        )}
+
+                                        <div className="message-user-container">
+                                            <p className="message-user">
+                                                {message.user.isCurrentUser ? "Ты" : message.user.login}
+                                            </p>
+                                        </div>
+
+                                        <p className="message-date">
+                                            {new Date(message.createdAt).toLocaleString()}
                                         </p>
-                                        <p className="message-date">{new Date(message.createdAt).toLocaleString()}</p>
                                     </div>
+
                                     <p>{message.message}</p>
                                     <div className="reply-button">
-                                        <FaReply
-                                            className="reply-icon"
+                                        <span
+                                            className="reply-text"
                                             onClick={() => setReplyMessageId(message.id)}
                                             title="Ответить"
-                                        />
+                                        >
+                                            ➥Ответ
+                                        </span>
                                     </div>
 
                                     {message.replies && message.replies.map((reply, index) => (
                                         <div key={index} className="reply">
                                             <div className="reply-header">
+                                                {reply.user.avatar ? (
+                                                    <img
+                                                        src={getAvatarUrl(message.user.avatar)}
+                                                        alt="аватар"
+                                                        className="reply-avatar"
+                                                    />
+                                                ) : (
+                                                    <div className="reply-avatar initials">
+                                                        {reply.user.login[0].toUpperCase()}
+                                                    </div>
+                                                )}
                                                 <p className="reply-user">
-                                                    {reply.isCurrentUser ? "Ты" : reply.user.login}
+                                                    {reply.user.isCurrentUser ? "Ты" : reply.user.login}
                                                 </p>
                                                 <p className="reply-date">{new Date(reply.createdAt).toLocaleString()}</p>
                                             </div>

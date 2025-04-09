@@ -18,7 +18,7 @@ const icons = {
     hover: [brainIcon4Hover, brainIconHover, brainIcon1Hover, brainIcon2Hover, brainIcon3Hover],
 };
 
-const Sidebars = () => {
+const Sidebars = ({ visible, onHide }) => {
     const [isHovered, setIsHovered] = useState(false);
     const [hoveredIndex, setHoveredIndex] = useState(null);
     const location = useLocation();
@@ -51,7 +51,7 @@ const Sidebars = () => {
         <Sidebar
             visible={true}
             modal={false}
-            onHide={() => {}}
+            dismissable={false}
             className={`custom-sidebar ${isHovered ? 'expanded' : 'collapsed'}`}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => {
@@ -59,7 +59,7 @@ const Sidebars = () => {
                 setHoveredIndex(null);
             }}
         >
-            <div className="min-h-screen flex relative lg:static surface-ground">
+        <div className="min-h-screen flex relative lg:static surface-ground">
                 <div id="app-sidebar" className={`surface-section h-screen block flex-shrink-0 z-1 border-right-1 surface-border select-none ${isHovered ? 'expanded' : 'collapsed'}`}>
                     <div className="flex flex-column h-full">
                         <div className="flex-grow-1 flex flex-column justify-content-between px-4 py-3 overflow-hidden custom-style">
