@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useRef, useState} from "react";
 import { useParams, useLocation } from "react-router-dom";
 import axiosInstance from "../../axiosInstance";
 import './TaskDetails.css';
 import Sidebars from "../../Components/Sidebars/Sidebars";
 import { Link } from "react-router-dom";
-import { FaHeart, FaReply } from "react-icons/fa";
+import { FaHeart } from "react-icons/fa";
 import languageImages from "../../Components/Languages/languageImages";
 import CodeMirror from "@uiw/react-codemirror";
 import { php } from '@codemirror/lang-php';
 import {javascript} from "@codemirror/lang-javascript";
 import {dracula} from "@uiw/codemirror-theme-dracula";
 import {Button} from "primereact/button";
+import { Toast } from 'primereact/toast';
 
 
 
@@ -27,6 +28,11 @@ const TaskDetails = () => {
     const [userSolutions, setUserSolutions] = useState([]);
     const location = useLocation();
     const [selectedLanguage, setSelectedLanguage] = useState(null);
+    const [editingMessageId, setEditingMessageId] = useState(null);
+    const [editingReplyId, setEditingReplyId] = useState(null);
+    const [editingText, setEditingText] = useState("");
+    const [newReplyText, setNewReplyText] = useState("");
+    const toast = useRef(null);
 
     const renderStars = (difficulty) => {
         const stars = [];
@@ -211,6 +217,120 @@ const TaskDetails = () => {
         return avatarPath;
     };
 
+    const handleEditMessage = async (messageId, currentText) => {
+        const token = localStorage.getItem('token');
+        try {
+            await axiosInstance.put(`/edit/discussion/${messageId}`,
+                { message: currentText },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+            setDiscussionMessages((prev) =>
+                prev.map((msg) => msg.id === messageId ? { ...msg, message: currentText } : msg)
+            );
+            setEditingMessageId(null);
+            setEditingText("");
+
+            toast.current.show({
+                severity: 'success',
+                summary: 'Сообщение обновлено',
+                detail: 'Сообщение успешно отредактировано.',
+                life: 3500
+            });
+        } catch (err) {
+            console.error("Ошибка при редактировании сообщения:", err);
+        }
+    };
+    const handleDeleteMessage = async (messageId) => {
+        const token = localStorage.getItem('token');
+        try {
+            await axiosInstance.delete(`/delete/discussion/${messageId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            setDiscussionMessages((prev) => prev.filter((msg) => msg.id !== messageId));
+
+            toast.current.show({
+                severity: 'success',
+                summary: 'Сообщение удалено',
+                detail: 'Сообщение успешно удалено.',
+                life: 3500
+            });
+        } catch (err) {
+            console.error("Ошибка при удалении сообщения:", err);
+        }
+    };
+    const handleDeleteReply = async (replyId, messageId) => {
+        const token = localStorage.getItem('token');
+        try {
+            await axiosInstance.delete(`/delete/reply/${replyId}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            setDiscussionMessages((prevMessages) =>
+                prevMessages.map((msg) =>
+                    msg.id === messageId
+                        ? {
+                            ...msg,
+                            replies: msg.replies.filter((reply) => reply.id !== replyId)
+                        }
+                        : msg
+                )
+            );
+
+            toast.current.show({
+                severity: 'success',
+                summary: 'Ответ удалён',
+                detail: 'Ответ успешно удалён.',
+                life: 3500
+            });
+        } catch (err) {
+            console.error("Ошибка при удалении ответа", err);
+        }
+    };
+
+    const handleEditReply = async (replyId, newMessage, messageId) => {
+        const token = localStorage.getItem('token');
+        if (newMessage.trim() === "") return;
+
+        try {
+            await axiosInstance.put(`/reply/${replyId}`, { message: newMessage }, {
+                headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+            });
+
+            setDiscussionMessages((prevMessages) =>
+                prevMessages.map((msg) => {
+                    if (msg.id === messageId) {
+                        return {
+                            ...msg,
+                            replies: msg.replies.map((reply) =>
+                                reply.id === replyId ? { ...reply, replyToMessage: newMessage } : reply
+                            ),
+                        };
+                    }
+                    return msg;
+                })
+            );
+            setEditingReplyId(null);
+            setEditingText("");
+
+            toast.current.show({
+                severity: 'success',
+                summary: 'Ответ обновлён',
+                detail: 'Ответ успешно отредактирован.',
+                life: 3500
+            });
+        } catch (err) {
+            console.log('Ошибка при редактировании ответа', err);
+        }
+    };
+
     return (
         <div className="task-details-data">
             <Sidebars visible={sidebarVisible} onHide={() => setSidebarVisible(false)} />
@@ -321,39 +441,62 @@ const TaskDetails = () => {
                                         </p>
                                     </div>
 
-                                    <p>{message.message}</p>
-                                    <div className="reply-button">
-                                        <span
-                                            className="reply-text"
-                                            onClick={() => setReplyMessageId(message.id)}
-                                            title="Ответить"
-                                        >
-                                            ➥Ответ
-                                        </span>
-                                    </div>
+                                    {editingMessageId === message.id ? (
+                                        <div className="reply-input-container">
+                        <textarea
+                            value={editingText}
+                            onChange={(e) => setEditingText(e.target.value)}
+                            className="reply-textarea"
+                        />
+                                            <button onClick={() => handleEditMessage(message.id, editingText)}
+                                                    className="reply-submit-button">
+                                                Сохранить
+                                            </button>
 
-                                    {message.replies && message.replies.map((reply, index) => (
-                                        <div key={index} className="reply">
-                                            <div className="reply-header">
-                                                {reply.user.avatar ? (
-                                                    <img
-                                                        src={getAvatarUrl(message.user.avatar)}
-                                                        alt="аватар"
-                                                        className="reply-avatar"
-                                                    />
-                                                ) : (
-                                                    <div className="reply-avatar initials">
-                                                        {reply.user.login[0].toUpperCase()}
-                                                    </div>
-                                                )}
-                                                <p className="reply-user">
-                                                    {reply.user.isCurrentUser ? "Ты" : reply.user.login}
-                                                </p>
-                                                <p className="reply-date">{new Date(reply.createdAt).toLocaleString()}</p>
-                                            </div>
-                                            <p>{reply.replyToMessage}</p>
+                                            <button
+                                                onClick={() => {
+                                                setEditingMessageId(null);
+                                                setEditingText("");}}
+                                                className="reply-submit-button">
+                                                Отменить
+                                            </button>
+
+
                                         </div>
-                                    ))}
+                                    ) : (
+                                        <p>{message.message}</p>
+                                    )}
+
+                                    <div className="reply-button">
+                                        <Button
+                                            icon="pi pi-reply"
+                                            className="p-button-text p-button-sm p-button-rounded"
+                                            onClick={() => {
+                                                setReplyMessageId(message.id);
+                                                setNewReplyText("");
+                                            }}
+                                            title="Ответить"
+                                        />
+                                        {message.user.isCurrentUser && (
+                                            <>
+                                                <Button
+                                                    icon="pi pi-pencil"
+                                                    className="p-button-text p-button-sm p-button-rounded"
+                                                    onClick={() => {
+                                                        setEditingMessageId(message.id);
+                                                        setEditingText(message.message);
+                                                    }}
+                                                    title="Редактировать"
+                                                />
+                                                <Button
+                                                    icon="pi pi-trash"
+                                                    className="p-button-text p-button-sm p-button-rounded p-button-danger"
+                                                    onClick={() => handleDeleteMessage(message.id)}
+                                                    title="Удалить"
+                                                />
+                                            </>
+                                        )}
+                                    </div>
 
                                     {replyMessageId === message.id && (
                                         <div className="reply-input-container">
@@ -367,12 +510,92 @@ const TaskDetails = () => {
                                                     className="reply-submit-button">
                                                 Отправить ответ
                                             </button>
+                                            <button
+                                                onClick={() => {
+                                                    setReplyMessageId(null);
+                                                }}
+                                                className="reply-submit-button">
+                                                Отменить
+                                            </button>
                                         </div>
                                     )}
+
+                                    {message.replies && message.replies.map((reply) => (
+                                        <div key={reply.id} className="reply">
+                                            <div className="reply-header">
+                                                {reply.user.avatar ? (
+                                                    <img
+                                                        src={getAvatarUrl(reply.user.avatar)}
+                                                        alt="аватар"
+                                                        className="reply-avatar"
+                                                    />
+                                                ) : (
+                                                    <div className="reply-avatar initials">
+                                                        {reply.user.login[0].toUpperCase()}
+                                                    </div>
+                                                )}
+
+                                                <p className="reply-user">
+                                                    {reply.user.isCurrentUser ? "Ты" : reply.user.login}
+                                                </p>
+
+                                                <p className="reply-date">
+                                                    {new Date(reply.createdAt).toLocaleString()}
+                                                </p>
+                                            </div>
+
+                                            {editingReplyId === reply.id ? (
+                                                <div className="reply-input-container">
+                                <textarea
+                                    value={editingText}
+                                    onChange={(e) => setEditingText(e.target.value)}
+                                    className="reply-textarea"
+                                />
+                                                    <button
+                                                        onClick={() => handleEditReply(reply.id, editingText, message.id)}
+                                                        className="reply-submit-button">
+                                                        Сохранить
+                                                    </button>
+                                                    <button
+                                                        onClick={() => {
+                                                            setEditingReplyId(null);
+                                                            setEditingText("");
+                                                        }}
+                                                        className="reply-submit-button">
+                                                        Отменить
+                                                    </button>
+
+                                                </div>
+                                            ) : (
+                                                <p>{reply.replyToMessage}</p>
+                                            )}
+
+                                            {reply.user.isCurrentUser && (
+                                                <>
+                                                    <Button
+                                                        icon="pi pi-pencil"
+                                                        className="p-button-text p-button-sm"
+                                                        onClick={() => {
+                                                            setEditingReplyId(reply.id);
+                                                            setEditingText(reply.replyToMessage);
+                                                        }}
+                                                        title="Редактировать"
+                                                    />
+                                                    <Button
+                                                        icon="pi pi-trash"
+                                                        className="p-button-text p-button-sm p-button-danger"
+                                                        onClick={() => handleDeleteReply(reply.id, message.id)}
+                                                        title="Удалить"
+                                                    />
+                                                </>
+                                            )}
+                                        </div>
+                                    ))}
                                 </div>
                             ))}
                         </div>
                     )}
+                    <Toast ref={toast} position="top-right" />
 
                     {activeTab === 'solution' && (
                         <div className="solution-tab">
