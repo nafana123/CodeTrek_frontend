@@ -309,6 +309,13 @@ p.description-text {
     font-weight: bold;
     color: white;
 }
+p.edited-text {
+    color: #ffffff;
+    margin-top: -15px;
+    text-align: left;
+    font-style: italic;
+    font-size:12px
+}
 
 
 

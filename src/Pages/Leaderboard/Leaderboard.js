@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import Sidebars from "../../Components/Sidebars/Sidebars";
 import axiosInstance from "../../axiosInstance";
+import { Timeline } from 'primereact/timeline';
 import { Paginator } from "primereact/paginator";
+import { motion } from "framer-motion";
 import "primereact/resources/themes/lara-dark-indigo/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
@@ -34,60 +36,84 @@ const Leaderboard = () => {
 
     const displayedLeaders = leaders.slice(page * rows, (page + 1) * rows);
 
+    const getRankStyle = (rank) => {
+        switch (rank) {
+            case 0:
+                return { background: 'gold', color: '#000' };
+            case 1:
+                return { background: 'silver', color: '#000' };
+            case 2:
+                return { background: '#cd7f32', color: '#000' }; // bronze
+            default:
+                return { background: '#00FF00', color: '#000' };
+        }
+    };
+
+    const customizedMarker = (item, index) => {
+        const rank = page * rows + index;
+        const style = getRankStyle(rank);
+        return (
+            <motion.div
+                className="custom-marker"
+                style={style}
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: index * 0.05 }}
+            >
+                {rank + 1}
+            </motion.div>
+        );
+    };
+
+    const customizedContent = (item, index) => {
+        const isRight = index % 2 !== 0;
+        const rank = page * rows + index;
+
+        return (
+            <motion.div
+                className={`timeline-content compact-content ${isRight ? "align-right" : "align-left"} ${rank < 3 ? `top-${rank + 1}` : ""}`}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+            >
+                {rank === 0 && (
+                    <motion.div
+                        className="crown"
+                        initial={{ y: -20, opacity: 0, rotate: -10 }}
+                        animate={{ y: 0, opacity: 1, rotate: 0 }}
+                        transition={{ duration: 0.5 }}
+                    >
+                        👑
+                    </motion.div>
+                )}
+                <div className="login">{item.user.login}</div>
+                <div className="points">{item.points} очков</div>
+            </motion.div>
+        );
+    };
+
     return (
         <div className="leaderboard-container">
             <Sidebars visible={sidebarVisible} onHide={() => setSidebarVisible(false)} />
             <div className="leaderboard-content">
-                <h1 className="title-leader">Лидеры</h1>
-
+                <h1 className="title-leader">Список лидеров</h1>
                 {leaders.length > 0 ? (
-                    <div className="podium-container">
-                        <div className="podium">
-                            {leaders[1] && (
-                                <div className="podium-position second">
-                                    <div className="podium-user">{leaders[1].user.login}</div>
-                                    <div className="podium-rank">2</div>
-                                    <div className="podium-points">{leaders[1].points} очков</div>
-                                </div>
-                            )}
-
-                            {leaders[0] && (
-                                <div className="podium-position first">
-                                    <div className="podium-user">{leaders[0].user.login}</div>
-                                    <div className="podium-rank">1</div>
-                                    <div className="podium-points">{leaders[0].points} очков</div>
-                                </div>
-                            )}
-
-                            {leaders[2] && (
-                                <div className="podium-position third">
-                                    <div className="podium-user">{leaders[2].user.login}</div>
-                                    <div className="podium-rank">3</div>
-                                    <div className="podium-points">{leaders[2].points} очков</div>
-                                </div>
-                            )}
-                        </div>
-
-                        <div className="others">
-                            <ul className="leader-list">
-                                {displayedLeaders.slice(3).map((leader, index) => (
-                                    <li key={leader.id} className="leader-item">
-                                        <span className="leader-rank">{index + 4}.</span>
-                                        <span className="leader-login">{leader.user.login}</span>
-                                        <span className="leader-points">{leader.points} очков</span>
-                                    </li>
-                                ))}
-                            </ul>
-                            <Paginator
-                                first={page * rows}
-                                rows={rows}
-                                totalRecords={leaders.length}
-                                onPageChange={onPageChange}
-                            />
-                        </div>
-                    </div>
+                    <>
+                        <Timeline
+                            value={displayedLeaders}
+                            align="alternate"
+                            marker={(item, i) => customizedMarker(item, i)}
+                            content={(item, i) => customizedContent(item, i)}
+                        />
+                        <Paginator
+                            first={page * rows}
+                            rows={rows}
+                            totalRecords={leaders.length}
+                            onPageChange={onPageChange}
+                        />
+                    </>
                 ) : (
-                    <p>Загрузка списка лидеров...</p>
+                    <p>Загрузка...</p>
                 )}
             </div>
         </div>

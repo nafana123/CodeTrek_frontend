@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
-import { AiFillLock } from 'react-icons/ai';
+import { AiFillLock, AiOutlineClose } from 'react-icons/ai';
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from 'jwt-decode';
-import { Message } from 'primereact/message';
 
 import axiosInstance from '../../axiosInstance';
 import './RegisterPage.css';
+import { Dialog } from "primereact/dialog";
 
 const RegisterPage = ({ setUser }) => {
     const [login, setLogin] = useState('');
@@ -15,19 +15,27 @@ const RegisterPage = ({ setUser }) => {
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [errors, setErrors] = useState({});
+    const [code, setCode] = useState(['', '', '', '', '']);
+    const [showModal, setShowModal] = useState(false);
+
+    const codeRefs = useRef([]);
+
+    useEffect(() => {
+        codeRefs.current = code.map((_, i) => codeRefs.current[i] ?? React.createRef());
+    }, [code]);
+
     const navigate = useNavigate();
 
     const validate = () => {
-        let errors = {};
-        if (!login) errors.login = 'Поле логи обязательно для заполнения';
-        if (!email) errors.email = 'Поле email обязательно для заполнения';
-        if (!password) errors.password = 'Поле пароль обязательно для заполнения';
+        const errors = {};
+        if (!login) errors.login = 'Поле логин обязательно';
+        if (!email) errors.email = 'Поле email обязательно';
+        if (!password) errors.password = 'Поле пароль обязательно';
         else if (password.length < 6) errors.password = 'Пароль должен быть не менее 6 символов';
         return errors;
     };
-
-    const handleSubmit = async (event) => {
-        event.preventDefault();
+    const handleStartRegister = async (e) => {
+        e.preventDefault();
         const validationErrors = validate();
         if (Object.keys(validationErrors).length > 0) {
             setErrors(validationErrors);
@@ -36,17 +44,47 @@ const RegisterPage = ({ setUser }) => {
         setErrors({});
 
         try {
-            const response = await axiosInstance.post('/register', { login, email, password });
+            await axiosInstance.post('/confirm', { email });
+            setShowModal(true);
+        } catch (error) {
+            if (error.response?.status === 409) {
+                setErrors({ email: 'Пользователь с таким email уже существует' });
+            } else {
+                setErrors({ general: 'Ошибка отправки кода. Попробуйте позже' });
+            }
+        }
+    };
+
+    const handleCodeChange = (index, value) => {
+        if (/^\d?$/.test(value)) {
+            const newCode = [...code];
+            newCode[index] = value;
+            setCode(newCode);
+
+            if (value && index < 4 && codeRefs.current[index + 1]) {
+                codeRefs.current[index + 1].current?.focus();
+            }
+        }
+    };
+
+    const handleRegister = async () => {
+        try {
+            const codeToSend = code.join('');
+            const response = await axiosInstance.post('/register', { login, email, password, codeToSend });
+            console.log(response)
+
             const { token } = response.data;
             localStorage.setItem('token', token);
             const user = jwtDecode(token);
             setUser(user);
             navigate('/dashboard');
         } catch (error) {
-            if (error.response && error.response.status === 409) {
+            if (error.response?.status === 400) {
+                setErrors({ general: 'Неверный код подтверждения. Пожалуйста, попробуйте еще раз.' });
+            } else if (error.response?.status === 409) {
                 setErrors({ email: 'Пользователь с таким email уже существует' });
             } else {
-                setErrors({ general: 'Ошибка регистрации. Попробуйте снова' });
+                setErrors({ general: 'Ошибка регистрации. Попробуйте позже.' });
             }
         }
     };
@@ -56,7 +94,7 @@ const RegisterPage = ({ setUser }) => {
             <div className="content">
                 <AiFillLock className="lock-icon" />
                 <h2>Регистрация</h2>
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleStartRegister}>
                     <InputText
                         type="text"
                         className={`input-field ${errors.login ? 'p-invalid' : ''}`}
@@ -65,6 +103,7 @@ const RegisterPage = ({ setUser }) => {
                         onChange={(e) => setLogin(e.target.value)}
                     />
                     {errors.login && <small className="error-message">{errors.login}</small>}
+
                     <InputText
                         type="email"
                         className={`input-field ${errors.email ? 'p-invalid' : ''}`}
@@ -73,6 +112,7 @@ const RegisterPage = ({ setUser }) => {
                         onChange={(e) => setEmail(e.target.value)}
                     />
                     {errors.email && <small className="error-message">{errors.email}</small>}
+
                     <div className="password-container">
                         <InputText
                             type={showPassword ? 'text' : 'password'}
@@ -92,6 +132,47 @@ const RegisterPage = ({ setUser }) => {
                     <Button type="submit" className="pButton pButtonSecondarys">Зарегистрироваться</Button>
                 </form>
             </div>
+
+            {showModal && (
+                <Dialog
+                    visible={showModal}
+                    onHide={() => setShowModal(false)}
+                    header={null}
+                    closable={false}
+                    className="custom-modal"
+                    draggable={false}
+                    modal
+                >
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h3>Введите код</h3>
+                            <AiOutlineClose className="close-icon" onClick={() => setShowModal(false)} />
+                        </div>
+                        <p className="modal-description">
+                            Введите пятизначный код подтверждения из письма,<br />
+                            отправленного на адрес <strong>{email}</strong>.
+                        </p>
+                        <div className="code-inputs">
+                            {code.map((digit, index) => (
+                                <input
+                                    key={index}
+                                    id={`code-${index}`}
+                                    className="code-input"
+                                    type="text"
+                                    maxLength="1"
+                                    value={digit}
+                                    onChange={(e) => handleCodeChange(index, e.target.value)}
+                                    ref={codeRefs.current[index]}
+                                />
+                            ))}
+                        </div>
+
+                        {errors.general && <small className="error-messagess">{errors.general}</small>}
+
+                        <Button label="Отправить" onClick={handleRegister} className="pButton pButtonSecondary" />
+                    </div>
+                </Dialog>
+            )}
         </div>
     );
 };

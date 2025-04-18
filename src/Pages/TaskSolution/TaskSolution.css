@@ -6,6 +6,7 @@
 }
 
 .task-output-container {
+    min-width: 1100px;
     max-width: 1100px;
     margin: 0 auto;
     padding: 30px;
@@ -53,18 +54,20 @@
     margin-bottom: 5px;
 }
 
-.task-detailss {
+.task-output-container {
     position: relative;
-    top: -420px;
-    left: 85.5%;
-    transform: translateX(-50%);
+}
+
+.task-detailss {
+    position: absolute;
+    top: 135px;
+    right: 30px;
     background-color: rgba(0, 0, 0, 0.6);
     color: #fff;
     font-size: 16px;
     padding: 10px;
     border-radius: 5px;
-    width: auto;
-    max-width: 300px;
+    width: 300px;
     text-align: center;
 }
 
@@ -133,6 +136,7 @@
     color: #000;
 }
 .other-solutions-details{
+    margin-top: 70px;
     display: flex;
     justify-content: space-between;
 }

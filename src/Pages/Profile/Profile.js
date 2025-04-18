@@ -9,7 +9,6 @@ import { Button } from "primereact/button";
 import { Toast } from 'primereact/toast';
 import "./Profile.css";
 import { Link } from "react-router-dom";
-import { FaTimes } from 'react-icons/fa'; // You can also use other icons or libraries if preferred
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 

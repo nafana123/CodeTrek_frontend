@@ -106,26 +106,19 @@ const TaskDetails = () => {
         };
 
         try {
-            const response = await axiosInstance.post(`/add/discussion/${id}`, messageData, {
+            await axiosInstance.post(`/add/discussion/${id}`, messageData, {
                 headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
             });
 
-            const newMessageData = {
-                ...messageData,
-                id: response.data.id,
-                user: { login: "Ты" },
-                createdAt: new Date().toISOString(),
-            };
-
-            setDiscussionMessages((prevMessages) => [...prevMessages, newMessageData]);
-
             setNewMessage("");
             setReplyTo(null);
+            await fetchDiscussionMessages();
 
         } catch (err) {
             console.log('Ошибка при отправке сообщения', err);
         }
     };
+
 
     const handleSendReply = async (discussionId) => {
         const token = localStorage.getItem('token');
@@ -134,32 +127,15 @@ const TaskDetails = () => {
         const messageData = { message: newMessage };
 
         try {
-            const response = await axiosInstance.post(`/reply/${discussionId}`, messageData, {
+            await axiosInstance.post(`/reply/${discussionId}`, messageData, {
                 headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
-            });
-
-            setDiscussionMessages((prevMessages) => {
-                return prevMessages.map((msg) => {
-                    if (msg.id === discussionId) {
-                        return {
-                            ...msg,
-                            replies: [
-                                ...(msg.replies || []),
-                                {
-                                    user: { login: "Ты" },
-                                    replyToMessage: newMessage,
-                                    createdAt: new Date().toISOString(),
-                                    id: response.data.id
-                                }
-                            ]
-                        };
-                    }
-                    return msg;
-                });
             });
 
             setNewMessage("");
             setReplyMessageId(null);
+
+           await fetchDiscussionMessages();
+
         } catch (err) {
             console.log('Ошибка при отправке ответа', err);
         }
@@ -204,6 +180,9 @@ const TaskDetails = () => {
         if (location.hash === '#discussion') {
             setActiveTab('discussion');
         }
+        if(location.hash === '#solution') {
+            setActiveTab('solution');
+        }
     }, [id, location]);
 
     if (!taskDetails) return <div>Loading...</div>;
@@ -230,7 +209,9 @@ const TaskDetails = () => {
                 }
             );
             setDiscussionMessages((prev) =>
-                prev.map((msg) => msg.id === messageId ? { ...msg, message: currentText } : msg)
+                prev.map((msg) =>
+                    msg.id === messageId ? { ...msg, message: currentText, isEdited: true } : msg
+                )
             );
             setEditingMessageId(null);
             setEditingText("");
@@ -310,7 +291,7 @@ const TaskDetails = () => {
                         return {
                             ...msg,
                             replies: msg.replies.map((reply) =>
-                                reply.id === replyId ? { ...reply, replyToMessage: newMessage } : reply
+                                reply.id === replyId ? { ...reply, replyToMessage: newMessage, isEdited: true } : reply
                             ),
                         };
                     }
@@ -466,6 +447,9 @@ const TaskDetails = () => {
                                     ) : (
                                         <p>{message.message}</p>
                                     )}
+                                    {message.isEdited && (
+                                        <p className="edited-text">(изменено)</p>
+                                    )}
 
                                     <div className="reply-button">
                                         <Button
@@ -500,12 +484,12 @@ const TaskDetails = () => {
 
                                     {replyMessageId === message.id && (
                                         <div className="reply-input-container">
-                    <textarea
-                        placeholder="Напишите ваш ответ..."
-                        value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
-                        className="reply-textarea"
-                    />
+                                                <textarea
+                                                    placeholder="Напишите ваш ответ..."
+                                                    value={newMessage}
+                                                    onChange={(e) => setNewMessage(e.target.value)}
+                                                    className="reply-textarea"
+                                                />
                                             <button onClick={() => handleSendReply(message.id)}
                                                     className="reply-submit-button">
                                                 Отправить ответ
@@ -568,6 +552,10 @@ const TaskDetails = () => {
                                                 </div>
                                             ) : (
                                                 <p>{reply.replyToMessage}</p>
+                                            )}
+
+                                            {reply.isEdited && (
+                                                <p className="edited-text">(изменено)</p>
                                             )}
 
                                             {reply.user.isCurrentUser && (

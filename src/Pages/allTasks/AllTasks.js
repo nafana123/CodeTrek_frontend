@@ -5,11 +5,14 @@ import './AllTasks.css';
 import { Link } from "react-router-dom";
 import { FaHeart, FaComments, FaCheckCircle } from 'react-icons/fa';
 import languageImages from "../../Components/Languages/languageImages";
+import { Paginator } from "primereact/paginator";
 
 const AllTasks = () => {
     const [sidebarVisible, setSidebarVisible] = useState(true);
     const [tasks, setTasks] = useState([]);
     const [favorites, setFavorites] = useState(new Set());
+    const [first, setFirst] = useState(0);
+    const [rows, setRows] = useState(3);
 
     const allTasks = async () => {
         const token = localStorage.getItem('token');
@@ -75,13 +78,20 @@ const AllTasks = () => {
         return stars;
     };
 
+    const onPageChange = (event) => {
+        setFirst(event.first);
+        setRows(event.rows);
+    };
+
+    const paginatedTasks = tasks.slice(first, first + rows);
+
     return (
         <div className="task-page-container">
             <Sidebars visible={sidebarVisible} onHide={() => setSidebarVisible(false)} />
 
             <div className="task-list-container">
-                {tasks.length > 0 ? (
-                    tasks.map((task) => (
+                {paginatedTasks.length > 0 ? (
+                    paginatedTasks.map((task) => (
                         <div key={task.id} className="task-all-item">
                             <div className="task-all-info">
                                 <div className="task-header">
@@ -108,9 +118,12 @@ const AllTasks = () => {
                                         </div>
                                     </Link>
 
-
-
-                                    <FaCheckCircle className="task-icon" title="Количество решений"/>
+                                    <Link to={`/details/task/${task.id}#solution`}>
+                                        <FaCheckCircle className="task-icon" title="Количество решений"/>
+                                        <span className="task-comments-count" title="Количество обсуждений">
+                                                ({task.solvedTasks})
+                                            </span>
+                                    </Link>
                                 </div>
 
                                 <p>{task.description || 'Описание недоступно'}</p>
@@ -145,6 +158,14 @@ const AllTasks = () => {
                 ) : (
                     <p>Задачи не найдены</p>
                 )}
+
+                <Paginator
+                    first={first}
+                    rows={rows}
+                    totalRecords={tasks.length}
+                    onPageChange={onPageChange}
+                    className="p-paginator"
+                />
             </div>
         </div>
     );
