@@ -25,16 +25,19 @@ const Sidebars = ({ visible, onHide }) => {
         'Главная страница',
         'Решай задачи различной <br />сложности и повышай свой<br /> ранг',
         'Просмотр лидеров',
-        'Узнайте обо всех аспектах <br />CodeTrek'
+        'Узнайте по подробнеее о <br />CodeTrek'
     ].map((text, index) => (
         <span key={index} dangerouslySetInnerHTML={{ __html: text }} />
     ));
+
+    const links = ['/dashboard', '/all/tasks', '/leaderboard', '/documentation'];
 
     const getIcon = (index) => {
         const pathIconMapping = {
             '/dashboard': 0,
             '/all/tasks': 1,
             '/leaderboard': 2,
+            '/documentation': 3,
         };
 
         if (pathIconMapping[location.pathname] === index) {
@@ -43,8 +46,6 @@ const Sidebars = ({ visible, onHide }) => {
 
         return hoveredIndex === index ? icons.hover[index] : icons.default[index];
     };
-
-    const links = ['/dashboard', '/all/tasks', '/leaderboard', '#'];
 
     return (
         <Sidebar

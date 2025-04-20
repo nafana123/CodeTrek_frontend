@@ -12,6 +12,7 @@ import Leaderboard from "./Pages/Leaderboard/Leaderboard";
 import TaskDetails from "./Pages/TaskDetails/TaskDetails";
 import AdminPanel from "./Pages/AdminPanel/AdminPanel";
 import UserDetails from "./Pages/AdminPanel/UserDetails";
+import DocumentationPage from "./Pages/Documentation/DocumentationPage";
 
 const AppRoutes = ({ user, setUser }) => {
     const isAuthenticated = () => !!localStorage.getItem('token');
@@ -41,6 +42,7 @@ const AppRoutes = ({ user, setUser }) => {
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/leaderboard" element={<Leaderboard />} />
                     <Route path="/details/task/:id" element={<TaskDetails />} />
+                    <Route path="/documentation" element={<DocumentationPage />} />
                     <Route path="*" element={<Navigate to="/dashboard" />} />
                 </>
             )}
