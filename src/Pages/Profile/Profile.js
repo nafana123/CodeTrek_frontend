@@ -297,7 +297,7 @@ const Profile = () => {
                                                 icon="pi pi-times"
                                                 className="remove-avatar-btn p-button-rounded p-button-danger"
                                                 aria-label="Удалить аватар"
-                                                style={{position: 'absolute', top: '160px', left: '410px', width: '20px', height: '20px', color: 'red', background: 'transparent', border: 'none',}}
+                                                style={{position: 'absolute', top: '160px', left: '305px', width: '20px', height: '20px', color: 'red', background: 'transparent', border: 'none',}}
                                                 onClick={deleteAvatar}
                                             />
 

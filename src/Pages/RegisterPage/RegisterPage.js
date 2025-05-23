@@ -44,14 +44,15 @@ const RegisterPage = ({ setUser }) => {
         setErrors({});
 
         try {
-            await axiosInstance.post('/confirm', { email });
-            setShowModal(true);
-        } catch (error) {
-            if (error.response?.status === 409) {
+            const { data } = await axiosInstance.post('/check-email', { email });
+            if (data.exists) {
                 setErrors({ email: 'Пользователь с таким email уже существует' });
-            } else {
-                setErrors({ general: 'Ошибка отправки кода. Попробуйте позже' });
+                return;
             }
+            setShowModal(true);
+            await axiosInstance.post('/confirm', { email });
+        } catch (error) {
+            setErrors({ general: 'Произошла ошибка. Попробуйте позже' });
         }
     };
 

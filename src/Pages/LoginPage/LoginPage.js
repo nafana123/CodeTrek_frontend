@@ -86,7 +86,7 @@ const LoginPage = ({ setUser }) => {
 
                     <Button type="submit" className="pButton pButtonSecondarys">Войти</Button>
                 </form>
-                <p className="forgot-password">Забыли пароль?</p>
+                {/*<p className="forgot-password">Забыли пароль?</p>*/}
             </div>
         </div>
     );
